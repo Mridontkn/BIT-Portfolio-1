@@ -10,7 +10,7 @@
     <div class="container">
         <div class="login-box">
             <h1>Login to Gainly</h1>
-            <form id="loginForm">
+            <div id="loginFormContainer">
                 <div class="form-group">
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
@@ -19,10 +19,87 @@
                     <label for="password">Password:</label>
                     <input type="password" id="password" name="password" required>
                 </div>
-                <button type="submit" class="btn">Login</button>
-            </form>
+                <div id="errorMessage" style="color: #ff4444; margin: 10px 0; font-size: 0.9rem;"></div>
+                <button onclick="handleLogin()" class="btn">Login</button>
+            </div>
             <p class="switch-form">Don't have an account? <a href="register.html">Sign up here</a></p>
         </div>
     </div>
+
+    <script>
+        const API_URL = 'https://bit-portfolio-1.onrender.com';
+
+        // Check if already logged in
+        if (localStorage.getItem('token')) {
+            window.location.href = 'dashboard.html';
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const button = event.target;
+
+            if (!email || !password) {
+                errorMessage.textContent = 'Please enter both email and password';
+                return;
+            }
+
+            // Disable button and show loading
+            button.disabled = true;
+            button.textContent = 'Logging in...';
+            errorMessage.textContent = 'Connecting to server... (may take 30s if sleeping)';
+            errorMessage.style.color = '#667eea';
+
+            try {
+                console.log('Attempting login...');
+                
+                const response = await fetch(`${API_URL}/api/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                console.log('Response received:', response.status);
+                const data = await response.json();
+                console.log('Data:', data);
+
+                if (response.ok) {
+                    // Store token in localStorage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    errorMessage.style.color = '#4CAF50';
+                    errorMessage.textContent = 'Login successful! Redirecting...';
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                } else {
+                    errorMessage.style.color = '#ff4444';
+                    errorMessage.textContent = data.message || 'Login failed. Please try again.';
+                    button.disabled = false;
+                    button.textContent = 'Login';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.style.color = '#ff4444';
+                errorMessage.textContent = 'Connection error: ' + error.message;
+                button.disabled = false;
+                button.textContent = 'Login';
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('email').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleLogin();
+        });
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleLogin();
+        });
+    </script>
 </body>
 </html>
