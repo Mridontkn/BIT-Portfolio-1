@@ -5,66 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Gainly</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-page {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-nav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .auth-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ffffff;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <div class="login-box">
-            <h1>Create Account</h1>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="name">Full Name:</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required minlength="6">
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password:</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required>
-                </div>
-                <div id="errorMessage" style="color: #ff4444; margin: 10px 0; font-size: 0.9rem;"></div>
-                <button type="submit" class="btn">Sign Up</button>
-            </form>
-            <p class="switch-form">Already have an account? <a href="login.html">Login here</a></p>
+<body class="auth-page">
+    <!-- Navigation -->
+    <div class="auth-nav">
+        <a href="index.html" class="auth-brand">Gainly</a>
+        <a href="index.html" class="back-link">← Back to Home</a>
+    </div>
+
+    <!-- Register Form -->
+    <div class="login-box">
+        <h1>Create Account</h1>
+        <div id="registerFormContainer">
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required minlength="6" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="••••••••">
+            </div>
+            <div id="errorMessage" style="color: #ff4444; margin: 10px 0; font-size: 0.9rem;"></div>
+            <button onclick="handleRegister()" class="btn">Sign Up</button>
         </div>
+        <p class="switch-form">Already have an account? <a href="login.html">Login here</a></p>
     </div>
 
     <script>
         const API_URL = 'https://bit-portfolio-1.onrender.com';
 
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
+        async function handleRegister() {
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const errorMessage = document.getElementById('errorMessage');
-            const submitButton = e.target.querySelector('button[type="submit"]');
+            const button = event.target;
 
-            // Check if passwords match
+            // Validation
+            if (!name || !email || !password || !confirmPassword) {
+                errorMessage.textContent = 'Please fill in all fields';
+                return;
+            }
+
             if (password !== confirmPassword) {
                 errorMessage.textContent = 'Passwords do not match';
                 return;
             }
 
-            // Check password length
             if (password.length < 6) {
                 errorMessage.textContent = 'Password must be at least 6 characters long';
                 return;
             }
 
             // Disable button and show loading
-            submitButton.disabled = true;
-            submitButton.textContent = 'Creating account...';
-            errorMessage.textContent = '';
+            button.disabled = true;
+            button.textContent = 'Creating account...';
+            errorMessage.textContent = 'Connecting to server... (may take 30s if sleeping)';
+            errorMessage.style.color = '#999';
 
             try {
+                console.log('Attempting registration...');
+                
                 const response = await fetch(`${API_URL}/api/register`, {
                     method: 'POST',
                     headers: {
@@ -73,26 +125,40 @@
                     body: JSON.stringify({ name, email, password })
                 });
 
+                console.log('Response received:', response.status);
                 const data = await response.json();
+                console.log('Data:', data);
 
                 if (response.ok) {
                     // Store token in localStorage
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
+                    errorMessage.style.color = '#4CAF50';
+                    errorMessage.textContent = 'Account created! Redirecting...';
+                    
                     // Redirect to dashboard
-                    window.location.href = 'dashboard.html';
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
                 } else {
+                    errorMessage.style.color = '#ff4444';
                     errorMessage.textContent = data.message || 'Registration failed. Please try again.';
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Sign Up';
+                    button.disabled = false;
+                    button.textContent = 'Sign Up';
                 }
             } catch (error) {
-                errorMessage.textContent = 'Connection error. The server might be sleeping (free tier). Please wait 30 seconds and try again.';
                 console.error('Error:', error);
-                submitButton.disabled = false;
-                submitButton.textContent = 'Sign Up';
+                errorMessage.style.color = '#ff4444';
+                errorMessage.textContent = 'Connection error: ' + error.message;
+                button.disabled = false;
+                button.textContent = 'Sign Up';
             }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('confirmPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleRegister();
         });
     </script>
 </body>

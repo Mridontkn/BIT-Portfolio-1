@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress - Gainly</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .page-container { max-width: 1100px; margin: 0 auto; }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 6px;
+      color: #ffffff;
+    }
+
+    .page-subtitle {
+      color: #999;
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card h2 {
+      font-size: 1.35rem;
+      margin-bottom: 14px;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .muted {
+      color: #999;
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .mini {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .mini .label {
+      color: #999;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    .mini .value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 110px 1fr 90px;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .date {
+      color: #ccc;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .bar {
+      height: 10px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4CAF50, #8BC34A);
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+
+    .right {
+      text-align: right;
+      color: #ccc;
+      font-weight: 700;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 18px 0;
+    }
+
+    .premium-lock {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      z-index: 5;
+    }
+
+    .lock-box {
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+
+    .lock-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .lock-sub {
+      color: #999;
+      line-height: 1.7;
+      font-size: 0.98rem;
+      margin-bottom: 18px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+
+    .small-note {
+      color: #666;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 950px) {
+      .layout { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .page-header h1 { font-size: 2.1rem; }
+      .row { grid-template-columns: 90px 1fr 80px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h2>Gainly</h2>
+      </div>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="calories.html" class="nav-link">Calories</a>
+        <a href="workouts.html" class="nav-link">Workouts</a>
+        <a href="recipes.html" class="nav-link">
+          Recipes
+          <span class="premium-badge">PRO</span>
+        </a>
+        <a href="progress.html" class="nav-link active">
+          Progress
+          <span class="premium-badge">PRO</span>
+        </a>
+        <a href="profile.html" class="nav-link">Profile</a>
+      </div>
+      <button onclick="logout()" class="btn btn-small">Logout</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <h1>Progress</h1>
+          <p class="page-subtitle">
+            View long-term trends across calories, workouts, and weight. This page uses your existing daily logs and can optionally include weight entries.
+          </p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-small" onclick="rebuild()">Refresh</button>
+          <button class="btn btn-small" onclick="openWeightModal()">Add Weight</button>
+        </div>
+      </div>
+
+      <div class="layout">
+        <!-- Main: Weekly Summary -->
+        <div class="card" id="mainCard">
+          <h2>Last 7 Days Summary</h2>
+          <p class="muted">
+            This summary pulls from your daily meals and workouts stored on this device and visualizes completion against your calorie goal.
+          </p>
+
+          <div class="grid">
+            <div class="mini">
+              <div class="label">Calories Logged</div>
+              <div class="value" id="weekCalories">0</div>
+            </div>
+            <div class="mini">
+              <div class="label">Workouts Logged</div>
+              <div class="value" id="weekWorkouts">0</div>
+            </div>
+            <div class="mini">
+              <div class="label">Avg Calories</div>
+              <div class="value" id="avgCalories">0</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h2 style="margin-top:0;">Daily Calories vs Goal</h2>
+          <div class="list" id="dailyList"></div>
+
+          <!-- Premium lock overlay -->
+          <div class="premium-lock" id="premiumLock" style="display:none;">
+            <div class="lock-box">
+              <div class="lock-title">Premium Feature</div>
+              <div class="lock-sub">
+                Progress history is available on Premium. Enable Premium on your device to unlock this page.
+              </div>
+              <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button class="btn btn-small" onclick="enablePremium()">Enable Premium</button>
+                <a href="profile.html" class="btn btn-secondary btn-small" style="margin:0;">Go to Profile</a>
+              </div>
+              <div class="pill-row">
+                <span class="pill">Weekly summaries</span>
+                <span class="pill">Weight tracking</span>
+                <span class="pill">Trends</span>
+                <span class="pill">Export</span>
+              </div>
+              <p class="small-note">
+                Premium is stored as <strong>isPremium</strong> in local storage for demonstration.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side: Weight + Insights -->
+        <div class="card" id="sideCard">
+          <h2>Weight</h2>
+          <p class="muted">
+            Optional: log your weight daily to track trends.
+          </p>
+
+          <div class="divider"></div>
+
+          <div class="mini" style="margin-bottom:14px;">
+            <div class="label">Latest Weight</div>
+            <div class="value" id="latestWeight">—</div>
+            <div class="small-note" id="latestWeightDate"></div>
+          </div>
+
+          <div class="mini">
+            <div class="label">Change (7 days)</div>
+            <div class="value" id="weightChange">—</div>
+            <div class="small-note">Based on first and last weight entries in the last 7 days.</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h2 style="margin-top:0;">Insights</h2>
+          <p class="muted" id="insightsText">
+            Log meals and workouts to see personalized insights here.
+          </p>
+
+          <p class="small-note">
+            This page reads from keys like <strong>meals_YYYY-MM-DD</strong>, <strong>workouts_YYYY-MM-DD</strong>, and <strong>weight_YYYY-MM-DD</strong>.
+          </p>
+
+          <div class="premium-lock" id="premiumLockSide" style="display:none;">
+            <div class="lock-box">
+              <div class="lock-title">Premium Feature</div>
+              <div class="lock-sub">
+                Weight tracking and insights require Premium. Enable Premium to unlock.
+              </div>
+              <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button class="btn btn-small" onclick="enablePremium()">Enable Premium</button>
+                <a href="profile.html" class="btn btn-secondary btn-small" style="margin:0;">Go to Profile</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Weight Modal -->
+  <div id="weightModal" class="modal">
+    <div class="modal-content" style="max-width:520px;">
+      <span class="modal-close" onclick="closeWeightModal()">&times;</span>
+      <h2>Add Weight</h2>
+
+      <div class="form-group">
+        <label for="weightValue">Weight</label>
+        <input type="number" id="weightValue" placeholder="e.g., 165" min="0" step="0.1" />
+      </div>
+
+      <div class="form-group">
+        <label for="weightUnit">Unit</label>
+        <select id="weightUnit">
+          <option value="lbs">lbs</option>
+          <option value="kg">kg</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="weightDate">Date</label>
+        <input type="date" id="weightDate" />
+        <p class="small-note">Defaults to today.</p>
+      </div>
+
+      <button class="btn btn-large" onclick="saveWeight()">Save Weight</button>
+    </div>
+  </div>
+
+  <script>
+    // Auth check
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    const DEFAULT_GOAL = 2000;
+
+    // Premium gate
+    function isPremiumEnabled() {
+      return localStorage.getItem('isPremium') === 'true';
+    }
+
+    function enforcePremium() {
+      const locked = !isPremiumEnabled();
+      document.getElementById('premiumLock').style.display = locked ? 'flex' : 'none';
+      document.getElementById('premiumLockSide').style.display = locked ? 'flex' : 'none';
+    }
+
+    function enablePremium() {
+      localStorage.setItem('isPremium', 'true');
+      showToast('Premium enabled on this device.', 'success');
+      enforcePremium();
+      rebuild();
+    }
+
+    function getGoal() {
+      const stored = parseInt(localStorage.getItem('calorieGoal') || DEFAULT_GOAL);
+      return isNaN(stored) ? DEFAULT_GOAL : stored;
+    }
+
+    function getDateKey(d) {
+      return d.toISOString().split('T')[0];
+    }
+
+    function addDays(date, delta) {
+      const d = new Date(date);
+      d.setDate(d.getDate() + delta);
+      return d;
+    }
+
+    function formatShortDate(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function sumMealsForDate(iso) {
+      const meals = JSON.parse(localStorage.getItem('meals_' + iso) || '[]');
+      return meals.reduce((sum, m) => sum + (parseInt(m.calories) || 0), 0);
+    }
+
+    function countWorkoutsForDate(iso) {
+      const workouts = JSON.parse(localStorage.getItem('workouts_' + iso) || '[]');
+      return workouts.length;
+    }
+
+    function getWeightForDate(iso) {
+      const raw = localStorage.getItem('weight_' + iso);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    function setInsights(weekCalories, weekWorkouts, avgCalories, goal) {
+      const el = document.getElementById('insightsText');
+
+      if (weekCalories === 0 && weekWorkouts === 0) {
+        el.textContent = 'Log meals and workouts to see personalized insights here.';
+        return;
+      }
+
+      const lines = [];
+      if (weekWorkouts > 0) {
+        lines.push(`You logged ${weekWorkouts} workout${weekWorkouts === 1 ? '' : 's'} in the last 7 days.`);
+      } else {
+        lines.push('No workouts logged in the last 7 days. Logging even short sessions helps build consistency.');
+      }
+
+      if (weekCalories > 0) {
+        const pct = Math.round((avgCalories / goal) * 100);
+        lines.push(`Your average intake was ${avgCalories} calories/day (${pct}% of your goal).`);
+      } else {
+        lines.push('No calories logged in the last 7 days. Logging meals improves accuracy and habit building.');
+      }
+
+      el.textContent = lines.join(' ');
+    }
+
+    function rebuild() {
+      enforcePremium();
+      if (!isPremiumEnabled()) return;
+
+      const goal = getGoal();
+      const today = new Date();
+      const days = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const d = addDays(today, -i);
+        const iso = getDateKey(d);
+        const calories = sumMealsForDate(iso);
+        const workouts = countWorkoutsForDate(iso);
+        const weight = getWeightForDate(iso);
+
+        days.push({ iso, calories, workouts, weight });
+      }
+
+      // Weekly stats
+      const weekCalories = days.reduce((s, x) => s + x.calories, 0);
+      const weekWorkouts = days.reduce((s, x) => s + x.workouts, 0);
+      const avgCalories = Math.round(weekCalories / 7);
+
+      document.getElementById('weekCalories').textContent = weekCalories.toLocaleString();
+      document.getElementById('weekWorkouts').textContent = weekWorkouts.toLocaleString();
+      document.getElementById('avgCalories').textContent = avgCalories.toLocaleString();
+
+      // Daily list
+      const list = document.getElementById('dailyList');
+      list.innerHTML = '';
+
+      days.forEach(day => {
+        const pct = goal > 0 ? Math.min((day.calories / goal) * 100, 100) : 0;
+
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML = `
+          <div class="date">${formatShortDate(day.iso)}</div>
+          <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+          <div class="right">${day.calories}</div>
+        `;
+        list.appendChild(row);
+      });
+
+      // Weight summary
+      const weightEntries = days
+        .map(d => ({ iso: d.iso, w: d.weight }))
+        .filter(x => x.w && typeof x.w.value === 'number');
+
+      if (weightEntries.length === 0) {
+        document.getElementById('latestWeight').textContent = '—';
+        document.getElementById('latestWeightDate').textContent = 'No weight logged in last 7 days.';
+        document.getElementById('weightChange').textContent = '—';
+      } else {
+        const last = weightEntries[weightEntries.length - 1];
+        const first = weightEntries[0];
+
+        document.getElementById('latestWeight').textContent = `${last.w.value} ${last.w.unit}`;
+        document.getElementById('latestWeightDate').textContent = `Logged on ${new Date(last.iso + 'T00:00:00').toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}`;
+
+        const change = (last.w.value - first.w.value);
+        const sign = change > 0 ? '+' : '';
+        document.getElementById('weightChange').textContent = `${sign}${change.toFixed(1)} ${last.w.unit}`;
+      }
+
+      setInsights(weekCalories, weekWorkouts, avgCalories, goal);
+    }
+
+    function openWeightModal() {
+      if (!isPremiumEnabled()) {
+        showToast('Premium is required to use weight tracking.', 'warning');
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('weightDate').value = today;
+      document.getElementById('weightValue').value = '';
+      document.getElementById('weightUnit').value = 'lbs';
+      document.getElementById('weightModal').style.display = 'flex';
+    }
+
+    function closeWeightModal() {
+      document.getElementById('weightModal').style.display = 'none';
+    }
+
+    function saveWeight() {
+      const value = parseFloat(document.getElementById('weightValue').value);
+      const unit = document.getElementById('weightUnit').value;
+      const date = document.getElementById('weightDate').value;
+
+      if (!date) {
+        showToast('Please select a date.', 'error');
+        return;
+      }
+      if (isNaN(value) || value <= 0) {
+        showToast('Please enter a valid weight.', 'error');
+        return;
+      }
+
+      localStorage.setItem('weight_' + date, JSON.stringify({
+        value: Number(value.toFixed(1)),
+        unit: unit,
+        timestamp: new Date().toISOString()
+      }));
+
+      closeWeightModal();
+      showToast('Weight saved.', 'success');
+      rebuild();
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('weightModal');
+      if (event.target === modal) closeWeightModal();
+    };
+
+    // Init
+    enforcePremium();
+    rebuild();
+  </script>
+</body>
+</html>

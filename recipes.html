@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipes - Gainly</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .page-container { max-width: 1200px; margin: 0 auto; }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 6px;
+      color: #ffffff;
+    }
+
+    .page-subtitle {
+      color: #999;
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 820px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .search {
+      flex: 1;
+      min-width: 220px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .search input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    .search input::placeholder { color: rgba(255,255,255,0.35); }
+
+    .select {
+      min-width: 200px;
+    }
+
+    .select select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .recipe-card {
+      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 22px;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .recipe-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .recipe-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0 0 10px 0;
+    }
+
+    .recipe-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .chip {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: #ccc;
+      font-size: 0.85rem;
+    }
+
+    .macros {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .macro {
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .macro .v {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .macro .k {
+      color: #999;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .recipe-desc {
+      color: #999;
+      line-height: 1.7;
+      font-size: 0.95rem;
+      margin: 10px 0 16px 0;
+      min-height: 48px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .premium-lock {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(7px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      z-index: 2500;
+    }
+
+    .lock-box {
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.75);
+    }
+
+    .lock-title {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .lock-sub {
+      color: #999;
+      line-height: 1.7;
+      font-size: 0.98rem;
+      margin-bottom: 18px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+
+    .small-note {
+      color: #666;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
+    .top-note {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .page-header h1 { font-size: 2.1rem; }
+      .macros { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h2>Gainly</h2>
+      </div>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="calories.html" class="nav-link">Calories</a>
+        <a href="workouts.html" class="nav-link">Workouts</a>
+        <a href="recipes.html" class="nav-link active">
+          Recipes
+          <span class="premium-badge">PRO</span>
+        </a>
+        <a href="progress.html" class="nav-link">
+          Progress
+          <span class="premium-badge">PRO</span>
+        </a>
+        <a href="profile.html" class="nav-link">Profile</a>
+      </div>
+      <button onclick="logout()" class="btn btn-small">Logout</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <h1>Recipes</h1>
+          <p class="page-subtitle">
+            Browse recipes with nutritional breakdown. Add a recipe to today’s meals in one click.
+            Recipes are a Premium feature and can be enabled on this device for demonstration.
+          </p>
+
+          <div class="top-note">
+            These recipes are a curated starter set for the portfolio build. You can replace them with an API later.
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-small" onclick="openPremiumGate()">Premium</button>
+          <button class="btn btn-secondary btn-small" onclick="render()">Refresh</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search">
+          <input id="searchInput" type="text" placeholder="Search recipes..." />
+        </div>
+
+        <div class="select">
+          <select id="filterSelect">
+            <option value="all">All Categories</option>
+            <option value="high-protein">High Protein</option>
+            <option value="balanced">Balanced</option>
+            <option value="quick">Quick</option>
+            <option value="vegetarian">Vegetarian</option>
+          </select>
+        </div>
+
+        <div class="select" style="min-width:220px;">
+          <select id="sortSelect">
+            <option value="default">Sort: Recommended</option>
+            <option value="cal-asc">Calories: Low to High</option>
+            <option value="cal-desc">Calories: High to Low</option>
+            <option value="protein-desc">Protein: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid" id="recipesGrid"></div>
+    </div>
+  </div>
+
+  <!-- Premium Gate -->
+  <div class="premium-lock" id="premiumGate">
+    <div class="lock-box">
+      <div class="lock-title">Premium Feature</div>
+      <div class="lock-sub">
+        Recipes are available on Premium. Enable Premium on your device to unlock the recipe library.
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn btn-small" onclick="enablePremium()">Enable Premium</button>
+        <a href="profile.html" class="btn btn-secondary btn-small" style="margin:0;">Go to Profile</a>
+        <button class="btn btn-secondary btn-small" onclick="closePremiumGate()">Close</button>
+      </div>
+
+      <div class="pill-row">
+        <span class="pill">Recipe library</span>
+        <span class="pill">Nutritional breakdown</span>
+        <span class="pill">Quick add to meals</span>
+        <span class="pill">Meal planning</span>
+      </div>
+
+      <p class="small-note">
+        Premium is stored as <strong>isPremium</strong> in local storage for demonstration.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Auth check
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    function isPremiumEnabled() {
+      return localStorage.getItem('isPremium') === 'true';
+    }
+
+    function openPremiumGate() {
+      document.getElementById('premiumGate').style.display = 'flex';
+    }
+
+    function closePremiumGate() {
+      document.getElementById('premiumGate').style.display = 'none';
+    }
+
+    function enablePremium() {
+      localStorage.setItem('isPremium', 'true');
+      showToast('Premium enabled on this device.', 'success');
+      closePremiumGate();
+      render();
+    }
+
+    function getTodayDate() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    // Starter recipe data (replace later with API)
+    const RECIPES = [
+      {
+        id: 'r1',
+        name: 'Chicken Rice Bowl',
+        category: 'high-protein',
+        minutes: 25,
+        servings: 1,
+        calories: 620,
+        protein: 48,
+        carbs: 68,
+        fat: 18,
+        description: 'Lean chicken with rice and vegetables. Solid high-protein meal with simple ingredients.'
+      },
+      {
+        id: 'r2',
+        name: 'Greek Yogurt Parfait',
+        category: 'quick',
+        minutes: 5,
+        servings: 1,
+        calories: 360,
+        protein: 28,
+        carbs: 40,
+        fat: 10,
+        description: 'Greek yogurt, fruit, and granola. Quick option that hits protein without a full meal prep.'
+      },
+      {
+        id: 'r3',
+        name: 'Salmon and Potatoes',
+        category: 'balanced',
+        minutes: 30,
+        servings: 1,
+        calories: 700,
+        protein: 42,
+        carbs: 52,
+        fat: 34,
+        description: 'Salmon with roasted potatoes. Balanced macros with higher healthy fats.'
+      },
+      {
+        id: 'r4',
+        name: 'Overnight Oats',
+        category: 'vegetarian',
+        minutes: 8,
+        servings: 1,
+        calories: 450,
+        protein: 22,
+        carbs: 55,
+        fat: 16,
+        description: 'Oats, milk, and toppings prepped ahead. Great for consistent mornings.'
+      },
+      {
+        id: 'r5',
+        name: 'Turkey Sandwich',
+        category: 'quick',
+        minutes: 7,
+        servings: 1,
+        calories: 520,
+        protein: 35,
+        carbs: 48,
+        fat: 20,
+        description: 'Fast lunch option with reliable macros. Add vegetables for extra volume.'
+      },
+      {
+        id: 'r6',
+        name: 'Tofu Stir Fry',
+        category: 'vegetarian',
+        minutes: 20,
+        servings: 1,
+        calories: 560,
+        protein: 32,
+        carbs: 58,
+        fat: 22,
+        description: 'Tofu with mixed vegetables and rice. Strong vegetarian protein option.'
+      },
+      {
+        id: 'r7',
+        name: 'Tuna Salad Wrap',
+        category: 'high-protein',
+        minutes: 10,
+        servings: 1,
+        calories: 480,
+        protein: 40,
+        carbs: 38,
+        fat: 18,
+        description: 'Tuna with light dressing in a wrap. Simple and high protein.'
+      },
+      {
+        id: 'r8',
+        name: 'Egg and Avocado Toast',
+        category: 'balanced',
+        minutes: 12,
+        servings: 1,
+        calories: 540,
+        protein: 22,
+        carbs: 40,
+        fat: 32,
+        description: 'Eggs and avocado on toast. Higher fat, solid breakfast for satiety.'
+      }
+    ];
+
+    function passesFilter(recipe, query, category) {
+      const q = (query || '').trim().toLowerCase();
+      const matchQuery = !q || recipe.name.toLowerCase().includes(q) || recipe.description.toLowerCase().includes(q);
+      const matchCategory = (category === 'all') || (recipe.category === category);
+      return matchQuery && matchCategory;
+    }
+
+    function sortRecipes(list, sortKey) {
+      const arr = [...list];
+      if (sortKey === 'cal-asc') return arr.sort((a,b) => a.calories - b.calories);
+      if (sortKey === 'cal-desc') return arr.sort((a,b) => b.calories - a.calories);
+      if (sortKey === 'protein-desc') return arr.sort((a,b) => b.protein - a.protein);
+      return arr;
+    }
+
+    function render() {
+      // Premium gating
+      if (!isPremiumEnabled()) {
+        openPremiumGate();
+      }
+
+      const query = document.getElementById('searchInput').value;
+      const category = document.getElementById('filterSelect').value;
+      const sortKey = document.getElementById('sortSelect').value;
+
+      const filtered = RECIPES.filter(r => passesFilter(r, query, category));
+      const sorted = sortRecipes(filtered, sortKey);
+
+      const grid = document.getElementById('recipesGrid');
+
+      if (!isPremiumEnabled()) {
+        // Show blurred/preview cards when locked
+        grid.innerHTML = sorted.map(r => lockedCardHTML(r)).join('');
+        return;
+      }
+
+      if (sorted.length === 0) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">No recipes found.</div>`;
+        return;
+      }
+
+      grid.innerHTML = sorted.map(r => cardHTML(r)).join('');
+    }
+
+    function lockedCardHTML(r) {
+      return `
+        <div class="recipe-card" style="filter: blur(3px); opacity: 0.7; pointer-events:none;">
+          <h3 class="recipe-title">${escapeHtml(r.name)}</h3>
+          <div class="recipe-meta">
+            <span class="chip">${escapeHtml(labelCategory(r.category))}</span>
+            <span class="chip">${r.minutes} min</span>
+            <span class="chip">${r.servings} serving</span>
+          </div>
+          <div class="macros">
+            <div class="macro"><div class="v">${r.calories}</div><div class="k">Calories</div></div>
+            <div class="macro"><div class="v">${r.protein}g</div><div class="k">Protein</div></div>
+            <div class="macro"><div class="v">${r.carbs}g</div><div class="k">Carbs</div></div>
+            <div class="macro"><div class="v">${r.fat}g</div><div class="k">Fat</div></div>
+          </div>
+          <p class="recipe-desc">${escapeHtml(r.description)}</p>
+        </div>
+      `;
+    }
+
+    function cardHTML(r) {
+      return `
+        <div class="recipe-card">
+          <h3 class="recipe-title">${escapeHtml(r.name)}</h3>
+          <div class="recipe-meta">
+            <span class="chip">${escapeHtml(labelCategory(r.category))}</span>
+            <span class="chip">${r.minutes} min</span>
+            <span class="chip">${r.servings} serving</span>
+          </div>
+
+          <div class="macros">
+            <div class="macro"><div class="v">${r.calories}</div><div class="k">Calories</div></div>
+            <div class="macro"><div class="v">${r.protein}g</div><div class="k">Protein</div></div>
+            <div class="macro"><div class="v">${r.carbs}g</div><div class="k">Carbs</div></div>
+            <div class="macro"><div class="v">${r.fat}g</div><div class="k">Fat</div></div>
+          </div>
+
+          <p class="recipe-desc">${escapeHtml(r.description)}</p>
+
+          <div class="actions">
+            <button class="btn btn-small" onclick="addToToday('${r.id}')">Add to Today</button>
+            <button class="btn btn-secondary btn-small" onclick="openDetails('${r.id}')">Details</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function labelCategory(cat) {
+      if (cat === 'high-protein') return 'High Protein';
+      if (cat === 'balanced') return 'Balanced';
+      if (cat === 'quick') return 'Quick';
+      if (cat === 'vegetarian') return 'Vegetarian';
+      return 'Recipe';
+    }
+
+    function addToToday(recipeId) {
+      const recipe = RECIPES.find(r => r.id === recipeId);
+      if (!recipe) return;
+
+      const meal = {
+        name: recipe.name,
+        type: 'Meal',
+        calories: recipe.calories,
+        protein: recipe.protein,
+        carbs: recipe.carbs,
+        fat: recipe.fat,
+        notes: 'Added from Recipes',
+        timestamp: new Date().toISOString()
+      };
+
+      const today = getTodayDate();
+      const key = 'meals_' + today;
+      const meals = JSON.parse(localStorage.getItem(key) || '[]');
+      meals.push(meal);
+      localStorage.setItem(key, JSON.stringify(meals));
+
+      showToast('Added to today’s meals.', 'success');
+    }
+
+    function openDetails(recipeId) {
+      const recipe = RECIPES.find(r => r.id === recipeId);
+      if (!recipe) return;
+
+      const lines = [
+        recipe.name,
+        '',
+        `Category: ${labelCategory(recipe.category)}`,
+        `Time: ${recipe.minutes} minutes`,
+        `Servings: ${recipe.servings}`,
+        '',
+        `Calories: ${recipe.calories}`,
+        `Protein: ${recipe.protein}g`,
+        `Carbs: ${recipe.carbs}g`,
+        `Fat: ${recipe.fat}g`,
+        '',
+        recipe.description
+      ];
+
+      alert(lines.join('\n'));
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+
+    // Events
+    document.getElementById('searchInput').addEventListener('input', render);
+    document.getElementById('filterSelect').addEventListener('change', render);
+    document.getElementById('sortSelect').addEventListener('change', render);
+
+    // Close premium gate on outside click
+    window.onclick = function(event) {
+      const gate = document.getElementById('premiumGate');
+      if (event.target === gate) closePremiumGate();
+    };
+
+    // Init
+    render();
+  </script>
+</body>
+</html>

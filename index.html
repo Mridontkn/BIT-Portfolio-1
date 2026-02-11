@@ -1,17 +1,317 @@
 <!DOCTYPE html> 
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Gainly</title>
-        <link rel="stylesheet" href="style.css">
-        <link rel="script" href="script.js">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-    <head>
-    <body>
-        <div class="container">
-            <h1>Gainly</h1>
-            <p>Gainly is a platform that provides users with personalized fitness and nutrition plans to help them achieve their health goals. Our mission is to empower individuals to lead healthier lives through tailored guidance and support.</p>
-            <a href="Gainly.html" class="btn">Visit Gainly</a>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Gainly</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Homepage specific styles */
+        .homepage {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .homepage-nav {
+            background: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .homepage-nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .homepage-brand {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .homepage-nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .homepage-nav-link {
+            color: #999;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .homepage-nav-link:hover {
+            color: #ffffff;
+        }
+
+        .hero-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 30px 60px;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 900px;
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            letter-spacing: -2px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: #999;
+            margin-bottom: 50px;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            padding: 18px 45px;
+            background-color: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid #ffffff;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-btn:hover {
+            background-color: transparent;
+            color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-btn-secondary {
+            background-color: transparent;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+        }
+
+        .hero-btn-secondary:hover {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .features-preview {
+            padding: 80px 30px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 35px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #999;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .homepage-nav-links {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-btn {
+                padding: 14px 30px;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body class="homepage">
+    <!-- Navigation -->
+    <nav class="homepage-nav">
+        <div class="homepage-nav-container">
+            <a href="index.html" class="homepage-brand">Gainly</a>
+            <div class="homepage-nav-links">
+                <a href="#features" class="homepage-nav-link">Features</a>
+                <a href="#about" class="homepage-nav-link">About</a>
+                <a href="login.html" class="hero-btn" style="margin: 0; padding: 12px 30px; font-size: 0.9rem;">Login</a>
+            </div>
         </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to Gainly</h1>
+            <p class="hero-subtitle">Your personalized fitness and nutrition platform. Track calories, log workouts, and achieve your health goals with ease.</p>
+            <div class="hero-buttons">
+                <a href="register.html" class="hero-btn">Get Started</a>
+                <a href="#features" class="hero-btn hero-btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Preview -->
+    <section class="features-preview" id="features">
+        <div class="features-container">
+            <h2 class="features-title">Everything You Need to Succeed</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🍽️</span>
+                    <h3>Calorie Tracking</h3>
+                    <p>Log your meals and track your daily calorie intake with ease. Stay on top of your nutrition goals.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">💪</span>
+                    <h3>Workout Logging</h3>
+                    <p>Record your workouts, track sets, reps, and weight. Monitor your strength progress over time.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">📚</span>
+                    <h3>Recipe Library</h3>
+                    <p>Access hundreds of healthy recipes with complete nutritional information. Premium feature.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">📅</span>
+                    <h3>Meal Planning</h3>
+                    <p>Plan your meals for the week and generate smart shopping lists automatically. Premium feature.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3>Progress Tracking</h3>
+                    <p>Visualize your weight, measurements, and fitness progress with detailed charts. Premium feature.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🎯</span>
+                    <h3>Goal Setting</h3>
+                    <p>Set personalized fitness and nutrition goals and track your journey to achieving them.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
 </html>

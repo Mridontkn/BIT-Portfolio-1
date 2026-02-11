@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About - Gainly</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .about-container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .about-hero {
+      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      padding: 45px 35px;
+      margin-bottom: 35px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .about-hero::after {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 60%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .about-title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .about-subtitle {
+      color: #999;
+      font-size: 1.15rem;
+      line-height: 1.7;
+      margin-bottom: 22px;
+      max-width: 800px;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 20px 0 0 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-bottom: 35px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 28px;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.25rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .card p {
+      margin: 0;
+      color: #999;
+      line-height: 1.7;
+      font-size: 0.98rem;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 18px;
+      color: #999;
+      line-height: 1.8;
+    }
+
+    .callout {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(255, 165, 0, 0.12));
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .callout h3 {
+      margin: 0 0 8px 0;
+      color: #FFD700;
+      font-weight: 800;
+      font-size: 1.15rem;
+    }
+
+    .callout p {
+      margin: 0 0 16px 0;
+      color: #ddd;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .mini-note {
+      color: #999;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+      .about-title {
+        font-size: 2.3rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="homepage-nav" style="position: sticky;">
+    <div class="homepage-nav-container">
+      <a href="index.html" class="homepage-brand">Gainly</a>
+      <div class="homepage-nav-links" style="display:flex;">
+        <a href="index.html#features" class="homepage-nav-link">Features</a>
+        <a href="about.html" class="homepage-nav-link" style="color:#fff;">About</a>
+        <a href="login.html" class="hero-btn" style="margin: 0; padding: 12px 30px; font-size: 0.9rem;">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="about-container">
+
+      <section class="about-hero">
+        <h1 class="about-title">About Gainly</h1>
+        <p class="about-subtitle">
+          Gainly is a fitness and nutrition tracker designed to make daily progress simple:
+          log meals, track calories and macros, record workouts, and stay consistent.
+          It is built to reflect a real SaaS-style product with authentication,
+          a dashboard, and premium feature previews.
+        </p>
+
+        <div class="cta-row">
+          <a href="register.html" class="btn" style="margin:0;">Create Account</a>
+          <a href="login.html" class="btn btn-secondary" style="margin:0;">Login</a>
+          <a href="index.html#features" class="btn btn-secondary" style="margin:0;">View Features</a>
+        </div>
+
+        <div class="pill-row">
+          <span class="pill">Calorie Tracking</span>
+          <span class="pill">Workout Logging</span>
+          <span class="pill">Dashboard Summaries</span>
+          <span class="pill">Premium Features</span>
+          <span class="pill">JWT Authentication</span>
+        </div>
+
+        <p class="mini-note">
+          Note: If the backend is sleeping on Render, the first login or registration may take 20–30 seconds.
+        </p>
+      </section>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Track Meals</h3>
+          <p>
+            Add meals with calorie and macro information and see your totals for the day.
+            Gainly calculates your remaining calories and visualizes your daily progress.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Log Workouts</h3>
+          <p>
+            Record workouts with exercises including sets, reps, and weight.
+            Gainly calculates total volume and provides a clear summary of daily activity.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Monitor Progress</h3>
+          <p>
+            The dashboard displays key daily statistics and recent activity.
+            Premium features are previewed and can be unlocked for demonstration purposes.
+          </p>
+        </div>
+      </div>
+
+      <section class="two-col">
+        <div class="card">
+          <h3>Technology Stack</h3>
+          <ul class="list">
+            <li>Frontend: HTML, CSS, Vanilla JavaScript</li>
+            <li>Backend: Node.js with Express</li>
+            <li>Authentication: JWT with bcrypt password hashing</li>
+            <li>Deployment: Render</li>
+            <li>Storage: Local storage (frontend demo), in-memory server storage</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <h3>Portfolio Project</h3>
+          <p>
+            Gainly is built as a portfolio-ready full-stack application demonstrating
+            authentication, protected routes, interactive UI components,
+            and structured client-side state management.
+          </p>
+          <a href="register.html" class="btn btn-large" style="margin:0;">Try Gainly</a>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</body>
+</html>

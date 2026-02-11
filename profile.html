@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile - Gainly</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .page-container { max-width: 1000px; margin: 0 auto; }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 6px;
+      color: #ffffff;
+    }
+
+    .page-subtitle {
+      color: #999;
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 720px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .card h2 {
+      font-size: 1.35rem;
+      margin-bottom: 18px;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px 16px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .kv:last-child { border-bottom: none; }
+
+    .k {
+      color: #999;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .v {
+      color: #fff;
+      font-size: 1rem;
+      word-break: break-word;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+
+    .inline-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .muted {
+      color: #999;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 22px 0;
+    }
+
+    .small-note {
+      color: #666;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+      color: #ccc;
+      font-size: 0.95rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #666;
+    }
+
+    .status-dot.ok { background: #4CAF50; }
+    .status-dot.warn { background: #FFD700; }
+    .status-dot.bad { background: #ff4444; }
+
+    .danger {
+      border-color: rgba(255,68,68,0.25);
+      background: rgba(255,68,68,0.08);
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .page-header h1 { font-size: 2.1rem; }
+      .kv { grid-template-columns: 1fr; }
+      .k { margin-top: 6px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h2>Gainly</h2>
+      </div>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="calories.html" class="nav-link">Calories</a>
+        <a href="workouts.html" class="nav-link">Workouts</a>
+        <a href="recipes.html" class="nav-link">
+          Recipes
+          <span class="premium-badge">PRO</span>
+        </a>
+        <a href="progress.html" class="nav-link">
+          Progress
+          <span class="premium-badge">PRO</span>
+        </a>
+        <a href="profile.html" class="nav-link active">Profile</a>
+      </div>
+      <button onclick="logout()" class="btn btn-small">Logout</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <h1>Profile</h1>
+          <p class="page-subtitle">
+            Manage your account and preferences. Your daily calorie goal is used across the dashboard and calorie tracker.
+          </p>
+        </div>
+        <div class="inline-actions">
+          <button class="btn btn-secondary btn-small" onclick="refreshProfile()">Refresh</button>
+          <button class="btn btn-small" onclick="openPremiumModal()">Premium</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- Account Card -->
+        <div class="card">
+          <h2>Account</h2>
+
+          <div class="kv">
+            <div class="k">Name</div>
+            <div class="v" id="profileName">—</div>
+          </div>
+
+          <div class="kv">
+            <div class="k">Email</div>
+            <div class="v" id="profileEmail">—</div>
+          </div>
+
+          <div class="kv">
+            <div class="k">Member Since</div>
+            <div class="v" id="profileCreated">—</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="status" id="apiStatus">
+            <span class="status-dot warn" id="statusDot"></span>
+            <span id="statusText">Checking API status…</span>
+          </div>
+
+          <p class="small-note">
+            This page can verify your login token by calling a protected API endpoint.
+            If your backend is sleeping, the first request might take a bit longer.
+          </p>
+
+          <div class="inline-actions">
+            <button class="btn btn-secondary btn-small" onclick="testProtectedProfile()">
+              Verify Session
+            </button>
+            <button class="btn btn-secondary btn-small" onclick="copyToken()">
+              Copy Token
+            </button>
+          </div>
+        </div>
+
+        <!-- Preferences Card -->
+        <div class="card">
+          <h2>Preferences</h2>
+
+          <div class="form-group">
+            <label for="goalInput">Daily Calorie Goal</label>
+            <input type="number" id="goalInput" min="0" placeholder="e.g., 2000" />
+            <p class="small-note">
+              This updates your dashboard and calorie tracker goal immediately on this device.
+            </p>
+          </div>
+
+          <div class="inline-actions">
+            <button class="btn btn-small" onclick="saveGoal()">Save Goal</button>
+            <button class="btn btn-secondary btn-small" onclick="resetGoal()">Reset</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <h2 style="margin-top:0;">Data</h2>
+          <p class="muted">
+            Meals and workouts are currently stored locally per day. You can clear local data on this device.
+          </p>
+
+          <div class="inline-actions">
+            <button class="btn btn-secondary btn-small danger" onclick="clearTodayData()">
+              Clear Today’s Data
+            </button>
+            <button class="btn btn-secondary btn-small danger" onclick="clearAllLocalData()">
+              Clear All Local Data
+            </button>
+          </div>
+
+          <p class="small-note">
+            Clearing local data does not delete your account on the server.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Premium Modal -->
+  <div id="premiumModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closePremiumModal()">&times;</span>
+      <h2>Premium</h2>
+      <p class="muted" style="margin-bottom:18px;">
+        Premium unlocks recipe tools and long-term progress tracking. For demo purposes, you can toggle Premium on this device.
+      </p>
+
+      <div class="card" style="padding:18px; border-radius:14px; margin-bottom:18px;">
+        <div class="kv" style="padding:0; border-bottom:none;">
+          <div class="k">Status</div>
+          <div class="v" id="premiumStatus">Free</div>
+        </div>
+        <div class="pill-row">
+          <span class="pill">Recipes</span>
+          <span class="pill">Progress</span>
+          <span class="pill">Unlimited History</span>
+          <span class="pill">Export Tools</span>
+        </div>
+      </div>
+
+      <div class="inline-actions">
+        <button class="btn btn-small" onclick="setPremium(true)">Enable Premium</button>
+        <button class="btn btn-secondary btn-small" onclick="setPremium(false)">Disable Premium</button>
+      </div>
+
+      <p class="small-note">
+        This toggle is saved as <strong>isPremium</strong> in local storage.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://bit-portfolio-1.onrender.com';
+
+    // Auth check
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    // Defaults
+    const DEFAULT_GOAL = 2000;
+
+    // Initialize UI
+    hydrateProfile();
+    hydrateGoal();
+    hydratePremium();
+    checkApiStatus();
+
+    function hydrateProfile() {
+      document.getElementById('profileName').textContent = user.name || 'User';
+      document.getElementById('profileEmail').textContent = user.email || '—';
+      document.getElementById('profileCreated').textContent = formatCreated(user.createdAt) || '—';
+    }
+
+    function formatCreated(createdAt) {
+      if (!createdAt) return null;
+      const d = new Date(createdAt);
+      if (isNaN(d.getTime())) return null;
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function hydrateGoal() {
+      const stored = parseInt(localStorage.getItem('calorieGoal') || DEFAULT_GOAL);
+      document.getElementById('goalInput').value = stored;
+    }
+
+    function hydratePremium() {
+      const isPremium = localStorage.getItem('isPremium') === 'true';
+      document.getElementById('premiumStatus').textContent = isPremium ? 'Premium (Enabled on this device)' : 'Free';
+    }
+
+    function saveGoal() {
+      const input = document.getElementById('goalInput');
+      const val = parseInt(input.value);
+
+      if (isNaN(val) || val < 0) {
+        showToast('Please enter a valid calorie goal.', 'error');
+        return;
+      }
+
+      localStorage.setItem('calorieGoal', String(val));
+      showToast('Calorie goal saved.', 'success');
+    }
+
+    function resetGoal() {
+      localStorage.setItem('calorieGoal', String(DEFAULT_GOAL));
+      document.getElementById('goalInput').value = DEFAULT_GOAL;
+      showToast('Calorie goal reset to default.', 'success');
+    }
+
+    function getTodayDate() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function clearTodayData() {
+      if (!confirm("Clear today's meals and workouts on this device?")) return;
+      const today = getTodayDate();
+      localStorage.removeItem('meals_' + today);
+      localStorage.removeItem('workouts_' + today);
+      showToast("Today's data cleared.", 'success');
+    }
+
+    function clearAllLocalData() {
+      if (!confirm("Clear all Gainly local data on this device? This will log you out.")) return;
+
+      const keysToDelete = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k) continue;
+
+        if (
+          k.startsWith('meals_') ||
+          k.startsWith('workouts_') ||
+          k === 'calorieGoal' ||
+          k === 'isPremium' ||
+          k === 'token' ||
+          k === 'user'
+        ) {
+          keysToDelete.push(k);
+        }
+      }
+
+      keysToDelete.forEach(k => localStorage.removeItem(k));
+      showToast('Local data cleared. Redirecting…', 'success');
+
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 600);
+    }
+
+    async function testProtectedProfile() {
+      setApiStatus('Checking protected endpoint…', 'warn');
+
+      try {
+        const res = await fetch(`${API_URL}/api/profile`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setApiStatus('Session verified. Protected endpoint succeeded.', 'ok');
+
+          // If server returns createdAt, show it
+          if (data && data.createdAt) {
+            document.getElementById('profileCreated').textContent =
+              new Date(data.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          }
+        } else if (res.status === 401 || res.status === 403) {
+          setApiStatus('Session invalid or expired. Please log in again.', 'bad');
+          showToast('Session expired. Please log in again.', 'error');
+        } else {
+          setApiStatus(`Server responded with status ${res.status}.`, 'warn');
+        }
+      } catch (err) {
+        setApiStatus('Could not reach server. Check your connection or try again.', 'bad');
+      }
+    }
+
+    async function checkApiStatus() {
+      // Lightweight check: try protected profile; if it fails due to sleeping server, show warn.
+      await testProtectedProfile();
+    }
+
+    function setApiStatus(text, level) {
+      const dot = document.getElementById('statusDot');
+      const label = document.getElementById('statusText');
+
+      label.textContent = text;
+      dot.classList.remove('ok', 'warn', 'bad');
+
+      if (level === 'ok') dot.classList.add('ok');
+      else if (level === 'bad') dot.classList.add('bad');
+      else dot.classList.add('warn');
+    }
+
+    function copyToken() {
+      if (!token) {
+        showToast('No token found.', 'error');
+        return;
+      }
+      navigator.clipboard.writeText(token)
+        .then(() => showToast('Token copied to clipboard.', 'success'))
+        .catch(() => showToast('Could not copy token.', 'error'));
+    }
+
+    function refreshProfile() {
+      hydrateProfile();
+      hydrateGoal();
+      hydratePremium();
+      showToast('Profile refreshed.', 'success');
+    }
+
+    function openPremiumModal() {
+      hydratePremium();
+      document.getElementById('premiumModal').style.display = 'flex';
+    }
+
+    function closePremiumModal() {
+      document.getElementById('premiumModal').style.display = 'none';
+    }
+
+    function setPremium(enabled) {
+      localStorage.setItem('isPremium', enabled ? 'true' : 'false');
+      hydratePremium();
+      showToast(enabled ? 'Premium enabled on this device.' : 'Premium disabled on this device.', 'success');
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('premiumModal');
+      if (event.target === modal) {
+        closePremiumModal();
+      }
+    };
+  </script>
+</body>
+</html>

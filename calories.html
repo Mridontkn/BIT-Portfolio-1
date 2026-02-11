@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorie Tracker - Gainly</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>Gainly</h2>
+            </div>
+            <div class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="calories.html" class="nav-link active">Calories</a>
+                <a href="workouts.html" class="nav-link">Workouts</a>
+                <a href="recipes.html" class="nav-link">
+                    Recipes
+                    <span class="premium-badge">PRO</span>
+                </a>
+                <a href="progress.html" class="nav-link">
+                    Progress
+                    <span class="premium-badge">PRO</span>
+                </a>
+                <a href="profile.html" class="nav-link">Profile</a>
+            </div>
+            <button onclick="logout()" class="btn btn-small">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1>Calorie Tracker</h1>
+                    <p class="page-subtitle">Track your daily food intake and nutrition</p>
+                </div>
+                <button onclick="openAddMealModal()" class="btn">+ Add Meal</button>
+            </div>
+
+            <!-- Calorie Summary Card -->
+            <div class="calorie-summary">
+                <div class="summary-main">
+                    <h3>Today's Calories</h3>
+                    <div class="calorie-display">
+                        <span class="calories-consumed" id="totalCalories">0</span>
+                        <span class="calories-separator">/</span>
+                        <span class="calories-target" id="calorieGoal">2000</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="calorieProgress" style="width: 0%"></div>
+                    </div>
+                    <p class="calories-remaining">
+                        <span id="remainingCalories">2000</span> calories remaining
+                    </p>
+                </div>
+
+                <!-- Macro Breakdown -->
+                <div class="macro-breakdown">
+                    <div class="macro-item">
+                        <span class="macro-label">Protein</span>
+                        <span class="macro-value" id="proteinTotal">0g</span>
+                    </div>
+                    <div class="macro-item">
+                        <span class="macro-label">Carbs</span>
+                        <span class="macro-value" id="carbsTotal">0g</span>
+                    </div>
+                    <div class="macro-item">
+                        <span class="macro-label">Fat</span>
+                        <span class="macro-value" id="fatTotal">0g</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meals List -->
+            <div class="meals-section">
+                <h2>Today's Meals</h2>
+                <div id="mealsList" class="meals-list">
+                    <div class="empty-state">
+                        <p>No meals logged yet today</p>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Click "Add Meal" to get started</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Meal Modal -->
+    <div id="addMealModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAddMealModal()">&times;</span>
+            <h2>Add Meal</h2>
+            <form id="addMealForm">
+                <div class="form-group">
+                    <label for="mealName">Meal Name *</label>
+                    <input type="text" id="mealName" placeholder="e.g., Chicken Breast, Oatmeal" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mealType">Meal Type *</label>
+                    <select id="mealType" required>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                        <option value="Snack">Snack</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="calories">Calories *</label>
+                    <input type="number" id="calories" placeholder="e.g., 350" required min="0">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="protein">Protein (g)</label>
+                        <input type="number" id="protein" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="carbs">Carbs (g)</label>
+                        <input type="number" id="carbs" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="fat">Fat (g)</label>
+                        <input type="number" id="fat" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Notes (optional)</label>
+                    <textarea id="notes" placeholder="Add any notes about this meal..." rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-large">Add Meal</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://bit-portfolio-1.onrender.com';
+        
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Load meals on page load
+        loadTodayMeals();
+
+        function getTodayDate() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function loadTodayMeals() {
+            const today = getTodayDate();
+            const meals = JSON.parse(localStorage.getItem('meals_' + today) || '[]');
+            
+            displayMeals(meals);
+            updateCalorieSummary(meals);
+        }
+
+        function displayMeals(meals) {
+            const mealsList = document.getElementById('mealsList');
+            
+            if (meals.length === 0) {
+                mealsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>No meals logged yet today</p>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Click "Add Meal" to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            mealsList.innerHTML = meals.map((meal, index) => `
+                <div class="meal-card">
+                    <div class="meal-header">
+                        <div>
+                            <h3>${meal.name}</h3>
+                            <span class="meal-type">${meal.type}</span>
+                        </div>
+                        <button onclick="deleteMeal(${index})" class="delete-btn">🗑️</button>
+                    </div>
+                    <div class="meal-details">
+                        <div class="meal-stat">
+                            <span class="stat-value">${meal.calories}</span>
+                            <span class="stat-label">calories</span>
+                        </div>
+                        <div class="meal-stat">
+                            <span class="stat-value">${meal.protein || 0}g</span>
+                            <span class="stat-label">protein</span>
+                        </div>
+                        <div class="meal-stat">
+                            <span class="stat-value">${meal.carbs || 0}g</span>
+                            <span class="stat-label">carbs</span>
+                        </div>
+                        <div class="meal-stat">
+                            <span class="stat-value">${meal.fat || 0}g</span>
+                            <span class="stat-label">fat</span>
+                        </div>
+                    </div>
+                    ${meal.notes ? `<p class="meal-notes">${meal.notes}</p>` : ''}
+                    <span class="meal-time">${formatTime(meal.timestamp)}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateCalorieSummary(meals) {
+            const totalCalories = meals.reduce((sum, meal) => sum + parseInt(meal.calories), 0);
+            const totalProtein = meals.reduce((sum, meal) => sum + parseInt(meal.protein || 0), 0);
+            const totalCarbs = meals.reduce((sum, meal) => sum + parseInt(meal.carbs || 0), 0);
+            const totalFat = meals.reduce((sum, meal) => sum + parseInt(meal.fat || 0), 0);
+            
+            const goal = 2000; // Default goal
+            const remaining = Math.max(0, goal - totalCalories);
+            const percentage = Math.min((totalCalories / goal) * 100, 100);
+
+            document.getElementById('totalCalories').textContent = totalCalories;
+            document.getElementById('calorieGoal').textContent = goal;
+            document.getElementById('remainingCalories').textContent = remaining;
+            document.getElementById('calorieProgress').style.width = percentage + '%';
+            
+            document.getElementById('proteinTotal').textContent = totalProtein + 'g';
+            document.getElementById('carbsTotal').textContent = totalCarbs + 'g';
+            document.getElementById('fatTotal').textContent = totalFat + 'g';
+        }
+
+        function openAddMealModal() {
+            document.getElementById('addMealModal').style.display = 'flex';
+        }
+
+        function closeAddMealModal() {
+            document.getElementById('addMealModal').style.display = 'none';
+            document.getElementById('addMealForm').reset();
+        }
+
+        document.getElementById('addMealForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const meal = {
+                name: document.getElementById('mealName').value,
+                type: document.getElementById('mealType').value,
+                calories: parseInt(document.getElementById('calories').value),
+                protein: parseInt(document.getElementById('protein').value) || 0,
+                carbs: parseInt(document.getElementById('carbs').value) || 0,
+                fat: parseInt(document.getElementById('fat').value) || 0,
+                notes: document.getElementById('notes').value,
+                timestamp: new Date().toISOString()
+            };
+
+            const today = getTodayDate();
+            const meals = JSON.parse(localStorage.getItem('meals_' + today) || '[]');
+            meals.push(meal);
+            localStorage.setItem('meals_' + today, JSON.stringify(meals));
+
+            loadTodayMeals();
+            closeAddMealModal();
+            showToast('Meal added successfully!', 'success');
+        });
+
+        function deleteMeal(index) {
+            if (!confirm('Are you sure you want to delete this meal?')) return;
+            
+            const today = getTodayDate();
+            const meals = JSON.parse(localStorage.getItem('meals_' + today) || '[]');
+            meals.splice(index, 1);
+            localStorage.setItem('meals_' + today, JSON.stringify(meals));
+            
+            loadTodayMeals();
+            showToast('Meal deleted', 'success');
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addMealModal');
+            if (event.target == modal) {
+                closeAddMealModal();
+            }
+        }
+    </script>
+
+    <style>
+        .page-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .page-subtitle {
+            color: #999;
+            font-size: 1rem;
+        }
+
+        .calorie-summary {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 40px;
+        }
+
+        .summary-main {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .summary-main h3 {
+            color: #999;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .calorie-display {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .calories-consumed {
+            color: #ffffff;
+        }
+
+        .calories-separator {
+            color: #666;
+            margin: 0 10px;
+        }
+
+        .calories-target {
+            color: #666;
+        }
+
+        .calories-remaining {
+            color: #999;
+            margin-top: 15px;
+            font-size: 1.1rem;
+        }
+
+        .macro-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .macro-item {
+            text-align: center;
+        }
+
+        .macro-label {
+            display: block;
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .macro-value {
+            display: block;
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .meals-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #ffffff;
+        }
+
+        .meals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .meal-card {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .meal-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .meal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .meal-header h3 {
+            font-size: 1.3rem;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .meal-type {
+            background: rgba(255, 255, 255, 0.1);
+            color: #999;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        .meal-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .meal-stat {
+            text-align: center;
+        }
+
+        .meal-stat .stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .meal-stat .stat-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .meal-notes {
+            color: #999;
+            font-size: 0.95rem;
+            font-style: italic;
+            margin: 15px 0 10px 0;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .meal-time {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .macro-breakdown {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .meal-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
