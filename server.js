@@ -49,7 +49,7 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({
       message: 'User registered successfully',
       token,
-      user: { id: newUser.id, name: newUser.name, email: newUser.email, createdAt: newUser.createdAt, isPremium: newUser.isPremium }
+      user: { id: newUser.id, name: newUser.name, email: newUser.email, createdAt: newUser.createdAt }
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -76,7 +76,7 @@ app.post('/api/login', async (req, res) => {
     res.json({
       message: 'Login successful',
       token,
-      user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt, isPremium: user.isPremium }
+      user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt }
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
