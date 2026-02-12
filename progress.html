@@ -224,10 +224,7 @@
           Recipes
           <span class="premium-badge">PRO</span>
         </a>
-        <a href="progress.html" class="nav-link active">
-          Progress
-          <span class="premium-badge">PRO</span>
-        </a>
+        <a href="progress.html" class="nav-link active">Progress</a>
         <a href="profile.html" class="nav-link">Profile</a>
       </div>
       <button onclick="logout()" class="btn btn-small">Logout</button>
@@ -272,33 +269,8 @@
             </div>
           </div>
 
-          <div class="divider"></div>
-
           <h2 style="margin-top:0;">Daily Calories vs Goal</h2>
           <div class="list" id="dailyList"></div>
-
-          <!-- Premium lock overlay -->
-          <div class="premium-lock" id="premiumLock" style="display:none;">
-            <div class="lock-box">
-              <div class="lock-title">Premium Feature</div>
-              <div class="lock-sub">
-                Progress history is available on Premium. Enable Premium on your device to unlock this page.
-              </div>
-              <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                <button class="btn btn-small" onclick="enablePremium()">Enable Premium</button>
-                <a href="profile.html" class="btn btn-secondary btn-small" style="margin:0;">Go to Profile</a>
-              </div>
-              <div class="pill-row">
-                <span class="pill">Weekly summaries</span>
-                <span class="pill">Weight tracking</span>
-                <span class="pill">Trends</span>
-                <span class="pill">Export</span>
-              </div>
-              <p class="small-note">
-                Premium is stored as <strong>isPremium</strong> in local storage for demonstration.
-              </p>
-            </div>
-          </div>
         </div>
 
         <!-- Side: Weight + Insights -->
@@ -332,19 +304,6 @@
           <p class="small-note">
             This page reads from keys like <strong>meals_YYYY-MM-DD</strong>, <strong>workouts_YYYY-MM-DD</strong>, and <strong>weight_YYYY-MM-DD</strong>.
           </p>
-
-          <div class="premium-lock" id="premiumLockSide" style="display:none;">
-            <div class="lock-box">
-              <div class="lock-title">Premium Feature</div>
-              <div class="lock-sub">
-                Weight tracking and insights require Premium. Enable Premium to unlock.
-              </div>
-              <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                <button class="btn btn-small" onclick="enablePremium()">Enable Premium</button>
-                <a href="profile.html" class="btn btn-secondary btn-small" style="margin:0;">Go to Profile</a>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -386,22 +345,13 @@
 
     const DEFAULT_GOAL = 2000;
 
-    // Premium gate
-    function isPremiumEnabled() {
-      return localStorage.getItem('isPremium') === 'true';
-    }
-
+    // Premium gate removed - all features now free
     function enforcePremium() {
-      const locked = !isPremiumEnabled();
-      document.getElementById('premiumLock').style.display = locked ? 'flex' : 'none';
-      document.getElementById('premiumLockSide').style.display = locked ? 'flex' : 'none';
+      // No longer needed
     }
 
     function enablePremium() {
-      localStorage.setItem('isPremium', 'true');
-      showToast('Premium enabled on this device.', 'success');
-      enforcePremium();
-      rebuild();
+      // No longer needed
     }
 
     function getGoal() {
@@ -467,7 +417,7 @@
 
     function rebuild() {
       enforcePremium();
-      if (!isPremiumEnabled()) return;
+      // No premium check needed
 
       const goal = getGoal();
       const today = new Date();
@@ -534,11 +484,6 @@
     }
 
     function openWeightModal() {
-      if (!isPremiumEnabled()) {
-        showToast('Premium is required to use weight tracking.', 'warning');
-        return;
-      }
-
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('weightDate').value = today;
       document.getElementById('weightValue').value = '';

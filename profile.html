@@ -167,11 +167,9 @@
         <a href="workouts.html" class="nav-link">Workouts</a>
         <a href="recipes.html" class="nav-link">
           Recipes
-          <span class="premium-badge">PRO</span>
         </a>
         <a href="progress.html" class="nav-link">
           Progress
-          <span class="premium-badge">PRO</span>
         </a>
         <a href="profile.html" class="nav-link active">Profile</a>
       </div>
@@ -190,7 +188,6 @@
         </div>
         <div class="inline-actions">
           <button class="btn btn-secondary btn-small" onclick="refreshProfile()">Refresh</button>
-          <button class="btn btn-small" onclick="openPremiumModal()">Premium</button>
         </div>
       </div>
 
@@ -277,39 +274,6 @@
     </div>
   </div>
 
-  <!-- Premium Modal -->
-  <div id="premiumModal" class="modal">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closePremiumModal()">&times;</span>
-      <h2>Premium</h2>
-      <p class="muted" style="margin-bottom:18px;">
-        Premium unlocks recipe tools and long-term progress tracking. For demo purposes, you can toggle Premium on this device.
-      </p>
-
-      <div class="card" style="padding:18px; border-radius:14px; margin-bottom:18px;">
-        <div class="kv" style="padding:0; border-bottom:none;">
-          <div class="k">Status</div>
-          <div class="v" id="premiumStatus">Free</div>
-        </div>
-        <div class="pill-row">
-          <span class="pill">Recipes</span>
-          <span class="pill">Progress</span>
-          <span class="pill">Unlimited History</span>
-          <span class="pill">Export Tools</span>
-        </div>
-      </div>
-
-      <div class="inline-actions">
-        <button class="btn btn-small" onclick="setPremium(true)">Enable Premium</button>
-        <button class="btn btn-secondary btn-small" onclick="setPremium(false)">Disable Premium</button>
-      </div>
-
-      <p class="small-note">
-        This toggle is saved as <strong>isPremium</strong> in local storage.
-      </p>
-    </div>
-  </div>
-
   <script>
     const API_URL = 'https://bit-portfolio-1.onrender.com';
 
@@ -327,7 +291,6 @@
     // Initialize UI
     hydrateProfile();
     hydrateGoal();
-    hydratePremium();
     checkApiStatus();
 
     function hydrateProfile() {
@@ -346,11 +309,6 @@
     function hydrateGoal() {
       const stored = parseInt(localStorage.getItem('calorieGoal') || DEFAULT_GOAL);
       document.getElementById('goalInput').value = stored;
-    }
-
-    function hydratePremium() {
-      const isPremium = localStorage.getItem('isPremium') === 'true';
-      document.getElementById('premiumStatus').textContent = isPremium ? 'Premium (Enabled on this device)' : 'Free';
     }
 
     function saveGoal() {
@@ -396,7 +354,6 @@
           k.startsWith('meals_') ||
           k.startsWith('workouts_') ||
           k === 'calorieGoal' ||
-          k === 'isPremium' ||
           k === 'token' ||
           k === 'user'
         ) {
@@ -470,24 +427,10 @@
     function refreshProfile() {
       hydrateProfile();
       hydrateGoal();
-      hydratePremium();
       showToast('Profile refreshed.', 'success');
     }
 
-    function openPremiumModal() {
-      hydratePremium();
-      document.getElementById('premiumModal').style.display = 'flex';
-    }
 
-    function closePremiumModal() {
-      document.getElementById('premiumModal').style.display = 'none';
-    }
-
-    function setPremium(enabled) {
-      localStorage.setItem('isPremium', enabled ? 'true' : 'false');
-      hydratePremium();
-      showToast(enabled ? 'Premium enabled on this device.' : 'Premium disabled on this device.', 'success');
-    }
 
     function showToast(message, type = 'success') {
       const toast = document.createElement('div');
@@ -505,14 +448,6 @@
       localStorage.removeItem('user');
       window.location.href = 'index.html';
     }
-
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-      const modal = document.getElementById('premiumModal');
-      if (event.target === modal) {
-        closePremiumModal();
-      }
-    };
   </script>
 </body>
 </html>

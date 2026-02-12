@@ -17,14 +17,8 @@
                 <a href="dashboard.html" class="nav-link active">Dashboard</a>
                 <a href="calories.html" class="nav-link">Calories</a>
                 <a href="workouts.html" class="nav-link">Workouts</a>
-                <a href="recipes.html" class="nav-link">
-                    Recipes
-                    <span class="premium-badge">PRO</span>
-                </a>
-                <a href="progress.html" class="nav-link">
-                    Progress
-                    <span class="premium-badge">PRO</span>
-                </a>
+                <a href="recipes.html" class="nav-link">Recipes</a>
+                <a href="progress.html" class="nav-link">Progress</a>
                 <a href="profile.html" class="nav-link">Profile</a>
             </div>
             <button onclick="logout()" class="btn btn-small">Logout</button>
@@ -38,17 +32,6 @@
             <div class="dashboard-header">
                 <h1>Welcome back, <span id="userName"></span>!</h1>
                 <p class="date-display" id="currentDate"></p>
-            </div>
-
-            <!-- Premium Upsell Banner (show if not premium) -->
-            <div class="premium-banner" id="premiumBanner">
-                <div class="premium-banner-content">
-                    <div>
-                        <h3>🚀 Upgrade to Gainly Premium</h3>
-                        <p>Get access to recipes, meal planning, progress tracking, and more!</p>
-                    </div>
-                    <button onclick="showPremiumModal()" class="btn">Upgrade Now - $9.99/month</button>
-                </div>
             </div>
 
             <!-- Quick Stats Grid -->
@@ -83,35 +66,27 @@
                     </div>
                 </div>
 
-                <!-- Weight Card (Premium Feature Preview) -->
-                <div class="stat-card premium-locked">
-                    <div class="premium-overlay">
-                        <span class="lock-icon">🔒</span>
-                        <p>Premium Feature</p>
-                    </div>
+                <!-- Weight Progress Card -->
+                <div class="stat-card">
                     <div class="stat-header">
                         <h3>Weight Progress</h3>
-                        <span class="premium-badge">PRO</span>
+                        <a href="progress.html" class="stat-link">View Details →</a>
                     </div>
-                    <div class="stat-content blurred">
-                        <div class="stat-number">165 lbs</div>
-                        <p class="stat-label">-5 lbs this month</p>
+                    <div class="stat-content">
+                        <div class="stat-number" id="latestWeight">—</div>
+                        <p class="stat-label" id="weightChange">No weight logged</p>
                     </div>
                 </div>
 
-                <!-- Streak Card (Premium Feature Preview) -->
-                <div class="stat-card premium-locked">
-                    <div class="premium-overlay">
-                        <span class="lock-icon">🔒</span>
-                        <p>Premium Feature</p>
-                    </div>
+                <!-- Workout Streak Card -->
+                <div class="stat-card">
                     <div class="stat-header">
                         <h3>Workout Streak</h3>
-                        <span class="premium-badge">PRO</span>
+                        <a href="progress.html" class="stat-link">View Details →</a>
                     </div>
-                    <div class="stat-content blurred">
-                        <div class="stat-number">🔥 12 days</div>
-                        <p class="stat-label">Keep it up!</p>
+                    <div class="stat-content">
+                        <div class="stat-number" id="workoutStreak">0</div>
+                        <p class="stat-label" id="streakLabel">days</p>
                     </div>
                 </div>
             </div>
@@ -122,64 +97,6 @@
                 <div id="activityList" class="activity-list">
                     <p class="empty-state">No activity yet. Start tracking your calories or workouts!</p>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Premium Modal -->
-    <div id="premiumModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closePremiumModal()">&times;</span>
-            <h2>Upgrade to Gainly Premium</h2>
-            <div class="premium-features">
-                <div class="feature-item">
-                    <span class="feature-icon">📚</span>
-                    <div>
-                        <h4>Recipe Library</h4>
-                        <p>Access hundreds of healthy recipes with full nutritional information</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">📅</span>
-                    <div>
-                        <h4>Meal Planning</h4>
-                        <p>Plan your meals for the week with smart shopping lists</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">📊</span>
-                    <div>
-                        <h4>Progress Tracking</h4>
-                        <p>Visualize your weight, measurements, and strength gains over time</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">💪</span>
-                    <div>
-                        <h4>Workout Templates</h4>
-                        <p>Pre-built workout routines for every fitness goal</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">📱</span>
-                    <div>
-                        <h4>Unlimited History</h4>
-                        <p>Access all your past data, not just today's</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">📄</span>
-                    <div>
-                        <h4>Export to PDF</h4>
-                        <p>Download your progress reports and meal plans</p>
-                    </div>
-                </div>
-            </div>
-            <div class="premium-pricing">
-                <h3>$9.99/month</h3>
-                <p>Cancel anytime. No commitments.</p>
-                <button class="btn btn-large" onclick="upgradeToPremium()">Start Premium Trial</button>
-                <p class="trial-note">7 days free, then $9.99/month</p>
             </div>
         </div>
     </div>
@@ -202,21 +119,9 @@
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
 
-        // Check if user is premium (for now, everyone is free)
-        const isPremium = localStorage.getItem('isPremium') === 'true';
+        // Check if user is premium (removed - all features now free)
+        // const isPremium = localStorage.getItem('isPremium') === 'true';
         
-        if (isPremium) {
-            document.getElementById('premiumBanner').style.display = 'none';
-            // Remove premium locks
-            document.querySelectorAll('.premium-locked').forEach(card => {
-                card.classList.remove('premium-locked');
-                const overlay = card.querySelector('.premium-overlay');
-                if (overlay) overlay.remove();
-                const content = card.querySelector('.stat-content');
-                if (content) content.classList.remove('blurred');
-            });
-        }
-
         // Load today's data
         loadTodayStats();
 
@@ -237,8 +142,93 @@
             const workouts = JSON.parse(localStorage.getItem('workouts_' + getTodayDate()) || '[]');
             document.getElementById('workoutsCount').textContent = workouts.length;
 
+            // Load weight progress
+            loadWeightProgress();
+
+            // Load workout streak
+            loadWorkoutStreak();
+
             // Load recent activity
             loadRecentActivity(meals, workouts);
+        }
+
+        function loadWeightProgress() {
+            // Get all weight entries from the last 30 days
+            const today = new Date();
+            const weightEntries = [];
+
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateKey = date.toISOString().split('T')[0];
+                const weightData = localStorage.getItem('weight_' + dateKey);
+                
+                if (weightData) {
+                    try {
+                        const weight = JSON.parse(weightData);
+                        weightEntries.push({
+                            date: dateKey,
+                            value: weight.value,
+                            unit: weight.unit
+                        });
+                    } catch (e) {
+                        // Ignore invalid data
+                    }
+                }
+            }
+
+            if (weightEntries.length === 0) {
+                document.getElementById('latestWeight').textContent = '—';
+                document.getElementById('weightChange').textContent = 'No weight logged';
+                return;
+            }
+
+            // Sort by date (most recent first)
+            weightEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const latest = weightEntries[0];
+            document.getElementById('latestWeight').textContent = `${latest.value} ${latest.unit}`;
+
+            // Calculate change from 7 days ago if available
+            const sevenDaysAgo = new Date(today);
+            sevenDaysAgo.setDate(today.getDate() - 7);
+            const sevenDaysKey = sevenDaysAgo.toISOString().split('T')[0];
+            
+            const weekEntry = weightEntries.find(w => w.date === sevenDaysKey);
+            if (weekEntry) {
+                const change = latest.value - weekEntry.value;
+                const sign = change > 0 ? '+' : '';
+                document.getElementById('weightChange').textContent = `${sign}${change.toFixed(1)} ${latest.unit} this week`;
+            } else {
+                document.getElementById('weightChange').textContent = 'Track for 7+ days to see change';
+            }
+        }
+
+        function loadWorkoutStreak() {
+            // Calculate current workout streak
+            const today = new Date();
+            let streak = 0;
+            let currentDate = new Date(today);
+
+            // Check up to 100 days back for streak
+            for (let i = 0; i < 100; i++) {
+                const dateKey = currentDate.toISOString().split('T')[0];
+                const workouts = JSON.parse(localStorage.getItem('workouts_' + dateKey) || '[]');
+                
+                if (workouts.length > 0) {
+                    streak++;
+                    currentDate.setDate(currentDate.getDate() - 1);
+                } else {
+                    // Only break streak if it's not today (allow current day to be 0)
+                    if (i > 0) {
+                        break;
+                    }
+                    currentDate.setDate(currentDate.getDate() - 1);
+                }
+            }
+
+            document.getElementById('workoutStreak').textContent = streak;
+            document.getElementById('streakLabel').textContent = streak === 1 ? 'day' : 'days';
         }
 
         function loadRecentActivity(meals, workouts) {
@@ -297,34 +287,19 @@ workouts.forEach(workout => {
             return date.toLocaleDateString();
         }
 
-        function showPremiumModal() {
-            document.getElementById('premiumModal').style.display = 'flex';
-        }
-
-        function closePremiumModal() {
-            document.getElementById('premiumModal').style.display = 'none';
-        }
-
-        function upgradeToPremium() {
-            // For demo purposes, just set premium to true
-            localStorage.setItem('isPremium', 'true');
-            alert('Welcome to Gainly Premium! 🎉\n\nYour premium features are now unlocked.');
-            location.reload();
-        }
-
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = 'index.html';
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('premiumModal');
-            if (event.target == modal) {
-                closePremiumModal();
-            }
-        }
+        // Close modal when clicking outside (removed - no modals)
+        // window.onclick = function(event) {
+        //     const modal = document.getElementById('premiumModal');
+        //     if (event.target == modal) {
+        //         closePremiumModal();
+        //     }
+        // }
     </script>
 </body>
 </html>
