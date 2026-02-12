@@ -137,69 +137,6 @@
       margin: 18px 0;
     }
 
-    .premium-lock {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.82);
-      backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px;
-      z-index: 5;
-    }
-
-    .lock-box {
-      max-width: 520px;
-      width: 100%;
-      text-align: center;
-      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 18px;
-      padding: 28px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-    }
-
-    .lock-title {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 10px;
-    }
-
-    .lock-sub {
-      color: #999;
-      line-height: 1.7;
-      font-size: 0.98rem;
-      margin-bottom: 18px;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 14px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.03);
-      color: #ccc;
-      font-size: 0.9rem;
-    }
-
-    .small-note {
-      color: #666;
-      font-size: 0.85rem;
-      line-height: 1.6;
-      margin-top: 10px;
-    }
-
     @media (max-width: 950px) {
       .layout { grid-template-columns: 1fr; }
       .grid { grid-template-columns: 1fr; }
@@ -303,6 +240,13 @@
           <p class="small-note">
             This page reads from keys like <strong>meals_YYYY-MM-DD</strong>, <strong>workouts_YYYY-MM-DD</strong>, and <strong>weight_YYYY-MM-DD</strong>.
           </p>
+
+          <div class="divider"></div>
+
+          <h2>Weight History</h2>
+          <div id="weightHistory" class="list">
+            <!-- Weight entries will be populated here -->
+          </div>
         </div>
       </div>
     </div>
@@ -312,7 +256,9 @@
   <div id="weightModal" class="modal">
     <div class="modal-content" style="max-width:520px;">
       <span class="modal-close" onclick="closeWeightModal()">&times;</span>
-      <h2>Add Weight</h2>
+      <h2 id="modalTitle">Add Weight</h2>
+
+      <input type="hidden" id="editDate" />
 
       <div class="form-group">
         <label for="weightValue">Weight</label>
@@ -333,28 +279,24 @@
         <p class="small-note">Defaults to today.</p>
       </div>
 
-      <button class="btn btn-large" onclick="saveWeight()">Save Weight</button>
+      <button class="btn btn-large" id="saveButton" onclick="saveWeight()">Save Weight</button>
     </div>
   </div>
 
   <script>
     // Auth check
     const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!token) window.location.href = 'login.html';
+
+    function getUserPrefix() {
+        return user.id ? user.id + '_' : '';
+    }
 
     const DEFAULT_GOAL = 2000;
 
-    // Premium gate removed - all features now free
-    function enforcePremium() {
-      // No longer needed
-    }
-
-    function enablePremium() {
-      // No longer needed
-    }
-
     function getGoal() {
-      const stored = parseInt(localStorage.getItem('calorieGoal') || DEFAULT_GOAL);
+      const stored = parseInt(localStorage.getItem('calorieGoal_' + getUserPrefix().slice(0, -1)) || DEFAULT_GOAL);
       return isNaN(stored) ? DEFAULT_GOAL : stored;
     }
 
@@ -374,19 +316,37 @@
     }
 
     function sumMealsForDate(iso) {
-      const meals = JSON.parse(localStorage.getItem('meals_' + iso) || '[]');
+      const meals = JSON.parse(localStorage.getItem('meals_' + getUserPrefix() + iso) || '[]');
       return meals.reduce((sum, m) => sum + (parseInt(m.calories) || 0), 0);
     }
 
     function countWorkoutsForDate(iso) {
-      const workouts = JSON.parse(localStorage.getItem('workouts_' + iso) || '[]');
+      const workouts = JSON.parse(localStorage.getItem('workouts_' + getUserPrefix() + iso) || '[]');
       return workouts.length;
     }
 
     function getWeightForDate(iso) {
-      const raw = localStorage.getItem('weight_' + iso);
+      const raw = localStorage.getItem('weight_' + getUserPrefix() + iso);
       if (!raw) return null;
       try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    function getAllWeightEntries() {
+      const entries = [];
+      const prefix = 'weight_' + getUserPrefix();
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(prefix)) {
+          const date = key.substring(prefix.length); // remove 'weight_' + prefix
+          const data = getWeightForDate(date);
+          if (data) {
+            entries.push({ date, ...data });
+          }
+        }
+      }
+      // Sort by date descending (newest first)
+      entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+      return entries;
     }
 
     function setInsights(weekCalories, weekWorkouts, avgCalories, goal) {
@@ -415,8 +375,6 @@
     }
 
     function rebuild() {
-      enforcePremium();
-      // No premium check needed
 
       const goal = getGoal();
       const today = new Date();
@@ -480,13 +438,49 @@
       }
 
       setInsights(weekCalories, weekWorkouts, avgCalories, goal);
+
+      // Populate weight history
+      const historyEl = document.getElementById('weightHistory');
+      historyEl.innerHTML = '';
+
+      const allWeights = getAllWeightEntries();
+      if (allWeights.length === 0) {
+        historyEl.innerHTML = '<p class="muted">No weight entries yet.</p>';
+      } else {
+        allWeights.forEach(entry => {
+          const item = document.createElement('div');
+          item.className = 'row';
+          item.innerHTML = `
+            <div class="date">${new Date(entry.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+            <div>${entry.value} ${entry.unit}</div>
+            <button class="btn btn-small" onclick="openWeightModal('${entry.date}')">Edit</button>
+          `;
+          historyEl.appendChild(item);
+        });
+      }
     }
 
-    function openWeightModal() {
+    function openWeightModal(editKey = null) {
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('weightDate').value = today;
       document.getElementById('weightValue').value = '';
       document.getElementById('weightUnit').value = 'lbs';
+      document.getElementById('editDate').value = '';
+      document.getElementById('modalTitle').textContent = 'Add Weight';
+      document.getElementById('saveButton').textContent = 'Save Weight';
+
+      if (editKey) {
+        const weightData = getWeightForDate(editKey);
+        if (weightData) {
+          document.getElementById('weightDate').value = editKey;
+          document.getElementById('weightValue').value = weightData.value;
+          document.getElementById('weightUnit').value = weightData.unit;
+          document.getElementById('editDate').value = editKey;
+          document.getElementById('modalTitle').textContent = 'Edit Weight';
+          document.getElementById('saveButton').textContent = 'Update Weight';
+        }
+      }
+
       document.getElementById('weightModal').style.display = 'flex';
     }
 
@@ -498,6 +492,7 @@
       const value = parseFloat(document.getElementById('weightValue').value);
       const unit = document.getElementById('weightUnit').value;
       const date = document.getElementById('weightDate').value;
+      const editDate = document.getElementById('editDate').value;
 
       if (!date) {
         showToast('Please select a date.', 'error');
@@ -508,14 +503,19 @@
         return;
       }
 
-      localStorage.setItem('weight_' + date, JSON.stringify({
+      // If editing and date changed, remove old entry
+      if (editDate && editDate !== date) {
+        localStorage.removeItem('weight_' + getUserPrefix() + editDate);
+      }
+
+      localStorage.setItem('weight_' + getUserPrefix() + date, JSON.stringify({
         value: Number(value.toFixed(1)),
         unit: unit,
         timestamp: new Date().toISOString()
       }));
 
       closeWeightModal();
-      showToast('Weight saved.', 'success');
+      showToast(editDate ? 'Weight updated.' : 'Weight saved.', 'success');
       rebuild();
     }
 
@@ -541,7 +541,6 @@
     };
 
     // Init
-    enforcePremium();
     rebuild();
   </script>
 </body>

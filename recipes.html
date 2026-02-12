@@ -167,69 +167,6 @@
       margin-top: 10px;
     }
 
-    .premium-lock {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.82);
-      backdrop-filter: blur(7px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 28px;
-      z-index: 2500;
-    }
-
-    .lock-box {
-      max-width: 560px;
-      width: 100%;
-      text-align: center;
-      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 18px;
-      padding: 30px;
-      box-shadow: 0 20px 70px rgba(0,0,0,0.75);
-    }
-
-    .lock-title {
-      font-size: 1.7rem;
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 10px;
-    }
-
-    .lock-sub {
-      color: #999;
-      line-height: 1.7;
-      font-size: 0.98rem;
-      margin-bottom: 18px;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 14px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.03);
-      color: #ccc;
-      font-size: 0.9rem;
-    }
-
-    .small-note {
-      color: #666;
-      font-size: 0.85rem;
-      line-height: 1.6;
-      margin-top: 10px;
-    }
-
     .top-note {
       color: #666;
       font-size: 0.9rem;
@@ -425,12 +362,15 @@
     </div>
   </div>
 
-  <!-- Premium Gate REMOVED -->
-
   <script>
     // Auth check
     const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!token) window.location.href = 'login.html';
+
+    function getUserPrefix() {
+        return user.id ? user.id + '_' : '';
+    }
 
     function getTodayDate() {
       return new Date().toISOString().split('T')[0];
@@ -438,12 +378,12 @@
 
     // Load recipes from localStorage
     function loadRecipes() {
-      return JSON.parse(localStorage.getItem('customRecipes') || '[]');
+      return JSON.parse(localStorage.getItem('customRecipes_' + getUserPrefix().slice(0, -1)) || '[]');
     }
 
     // Save recipes to localStorage
     function saveRecipes(recipes) {
-      localStorage.setItem('customRecipes', JSON.stringify(recipes));
+      localStorage.setItem('customRecipes_' + getUserPrefix().slice(0, -1), JSON.stringify(recipes));
     }
 
     function passesFilter(recipe, query, category) {
@@ -540,7 +480,7 @@
       };
 
       const today = getTodayDate();
-      const key = 'meals_' + today;
+      const key = 'meals_' + getUserPrefix() + today;
       const meals = JSON.parse(localStorage.getItem(key) || '[]');
       meals.push(meal);
       localStorage.setItem(key, JSON.stringify(meals));

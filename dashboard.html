@@ -114,22 +114,23 @@
             document.getElementById('userName').textContent = user.name || 'User';
         }
 
+        function getUserPrefix() {
+            return user.id ? user.id + '_' : '';
+        }
+
         // Display current date
         const today = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
 
-        // Check if user is premium (removed - all features now free)
-        // const isPremium = localStorage.getItem('isPremium') === 'true';
-        
         // Load today's data
         loadTodayStats();
 
         async function loadTodayStats() {
             // Load calories
-            const meals = JSON.parse(localStorage.getItem('meals_' + getTodayDate()) || '[]');
+            const meals = JSON.parse(localStorage.getItem('meals_' + getUserPrefix() + getTodayDate()) || '[]');
             const totalCalories = meals.reduce((sum, meal) => sum + meal.calories, 0);
-            const target = 2000; // Default target
+            const target = parseInt(localStorage.getItem('calorieGoal_' + getUserPrefix().slice(0, -1)) || '2000'); // Default target
             
             document.getElementById('caloriesConsumed').textContent = totalCalories;
             document.getElementById('caloriesTarget').textContent = target;
@@ -139,7 +140,7 @@
             document.getElementById('caloriesProgress').style.width = percentage + '%';
 
             // Load workouts
-            const workouts = JSON.parse(localStorage.getItem('workouts_' + getTodayDate()) || '[]');
+            const workouts = JSON.parse(localStorage.getItem('workouts_' + getUserPrefix() + getTodayDate()) || '[]');
             document.getElementById('workoutsCount').textContent = workouts.length;
 
             // Load weight progress
@@ -161,7 +162,7 @@
                 const date = new Date(today);
                 date.setDate(today.getDate() - i);
                 const dateKey = date.toISOString().split('T')[0];
-                const weightData = localStorage.getItem('weight_' + dateKey);
+                const weightData = localStorage.getItem('weight_' + getUserPrefix() + dateKey);
                 
                 if (weightData) {
                     try {
@@ -213,7 +214,7 @@
             // Check up to 100 days back for streak
             for (let i = 0; i < 100; i++) {
                 const dateKey = currentDate.toISOString().split('T')[0];
-                const workouts = JSON.parse(localStorage.getItem('workouts_' + dateKey) || '[]');
+                const workouts = JSON.parse(localStorage.getItem('workouts_' + getUserPrefix() + dateKey) || '[]');
                 
                 if (workouts.length > 0) {
                     streak++;
@@ -292,14 +293,6 @@ workouts.forEach(workout => {
             localStorage.removeItem('user');
             window.location.href = 'index.html';
         }
-
-        // Close modal when clicking outside (removed - no modals)
-        // window.onclick = function(event) {
-        //     const modal = document.getElementById('premiumModal');
-        //     if (event.target == modal) {
-        //         closePremiumModal();
-        //     }
-        // }
     </script>
 </body>
 </html>

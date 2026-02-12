@@ -285,6 +285,10 @@
       window.location.href = 'login.html';
     }
 
+    function getUserPrefix() {
+        return user.id ? user.id + '_' : '';
+    }
+
     // Defaults
     const DEFAULT_GOAL = 2000;
 
@@ -307,7 +311,7 @@
     }
 
     function hydrateGoal() {
-      const stored = parseInt(localStorage.getItem('calorieGoal') || DEFAULT_GOAL);
+      const stored = parseInt(localStorage.getItem('calorieGoal_' + getUserPrefix().slice(0, -1)) || DEFAULT_GOAL);
       document.getElementById('goalInput').value = stored;
     }
 
@@ -320,12 +324,12 @@
         return;
       }
 
-      localStorage.setItem('calorieGoal', String(val));
+      localStorage.setItem('calorieGoal_' + getUserPrefix().slice(0, -1), String(val));
       showToast('Calorie goal saved.', 'success');
     }
 
     function resetGoal() {
-      localStorage.setItem('calorieGoal', String(DEFAULT_GOAL));
+      localStorage.setItem('calorieGoal_' + getUserPrefix().slice(0, -1), String(DEFAULT_GOAL));
       document.getElementById('goalInput').value = DEFAULT_GOAL;
       showToast('Calorie goal reset to default.', 'success');
     }
@@ -337,8 +341,8 @@
     function clearTodayData() {
       if (!confirm("Clear today's meals and workouts on this device?")) return;
       const today = getTodayDate();
-      localStorage.removeItem('meals_' + today);
-      localStorage.removeItem('workouts_' + today);
+      localStorage.removeItem('meals_' + getUserPrefix() + today);
+      localStorage.removeItem('workouts_' + getUserPrefix() + today);
       showToast("Today's data cleared.", 'success');
     }
 
@@ -346,14 +350,16 @@
       if (!confirm("Clear all Gainly local data on this device? This will log you out.")) return;
 
       const keysToDelete = [];
+      const prefix = getUserPrefix();
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
         if (!k) continue;
 
         if (
-          k.startsWith('meals_') ||
-          k.startsWith('workouts_') ||
-          k === 'calorieGoal' ||
+          k.startsWith('meals_' + prefix) ||
+          k.startsWith('workouts_' + prefix) ||
+          k.startsWith('weight_' + prefix) ||
+          k === 'calorieGoal_' + prefix.slice(0, -1) ||
           k === 'token' ||
           k === 'user'
         ) {

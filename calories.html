@@ -150,6 +150,10 @@
             window.location.href = 'login.html';
         }
 
+        function getUserPrefix() {
+            return user.id ? user.id + '_' : '';
+        }
+
         // Load meals on page load
         loadTodayMeals();
 
@@ -159,7 +163,7 @@
 
         function loadTodayMeals() {
             const today = getTodayDate();
-            const meals = JSON.parse(localStorage.getItem('meals_' + today) || '[]');
+            const meals = JSON.parse(localStorage.getItem('meals_' + getUserPrefix() + today) || '[]');
             
             displayMeals(meals);
             updateCalorieSummary(meals);
@@ -217,7 +221,7 @@
             const totalCarbs = meals.reduce((sum, meal) => sum + parseInt(meal.carbs || 0), 0);
             const totalFat = meals.reduce((sum, meal) => sum + parseInt(meal.fat || 0), 0);
             
-            const goal = 2000; // Default goal
+            const goal = parseInt(localStorage.getItem('calorieGoal_' + getUserPrefix().slice(0, -1)) || '2000'); // Default goal
             const remaining = Math.max(0, goal - totalCalories);
             const percentage = Math.min((totalCalories / goal) * 100, 100);
 
@@ -255,9 +259,9 @@
             };
 
             const today = getTodayDate();
-            const meals = JSON.parse(localStorage.getItem('meals_' + today) || '[]');
+            const meals = JSON.parse(localStorage.getItem('meals_' + getUserPrefix() + today) || '[]');
             meals.push(meal);
-            localStorage.setItem('meals_' + today, JSON.stringify(meals));
+            localStorage.setItem('meals_' + getUserPrefix() + today, JSON.stringify(meals));
 
             loadTodayMeals();
             closeAddMealModal();
@@ -268,9 +272,9 @@
             if (!confirm('Are you sure you want to delete this meal?')) return;
             
             const today = getTodayDate();
-            const meals = JSON.parse(localStorage.getItem('meals_' + today) || '[]');
+            const meals = JSON.parse(localStorage.getItem('meals_' + getUserPrefix() + today) || '[]');
             meals.splice(index, 1);
-            localStorage.setItem('meals_' + today, JSON.stringify(meals));
+            localStorage.setItem('meals_' + getUserPrefix() + today, JSON.stringify(meals));
             
             loadTodayMeals();
             showToast('Meal deleted', 'success');
