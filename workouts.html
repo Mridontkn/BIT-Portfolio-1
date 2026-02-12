@@ -38,7 +38,10 @@
                     <h1>Workout Tracker</h1>
                     <p class="page-subtitle">Log your exercises and track your progress</p>
                 </div>
-                <button onclick="openAddWorkoutModal()" class="btn">+ Log Workout</button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="date" id="selectedDate" onchange="loadWorkoutsForDate()" />
+                    <button onclick="openAddWorkoutModal()" class="btn">+ Log Workout</button>
+                </div>
             </div>
 
             <!-- Workout Summary Card -->
@@ -75,7 +78,7 @@
 
             <!-- Workouts List -->
             <div class="workouts-section">
-                <h2>Today's Workouts</h2>
+                <h2 id="workoutsHeader">Today's Workouts</h2>
                 <div id="workoutsList" class="workouts-list">
                     <div class="empty-state">
                         <p>No workouts logged yet today</p>
@@ -150,15 +153,17 @@
         let exerciseCount = 0;
 
         // Load workouts on page load
-        loadTodayWorkouts();
+        const today = getTodayDate();
+        document.getElementById('selectedDate').value = today;
+        loadWorkoutsForDate();
 
         function getTodayDate() {
             return new Date().toISOString().split('T')[0];
         }
 
-        function loadTodayWorkouts() {
-            const today = getTodayDate();
-            const workouts = JSON.parse(localStorage.getItem('workouts_' + getUserPrefix() + today) || '[]');
+        function loadWorkoutsForDate() {
+            const selectedDate = document.getElementById('selectedDate').value;
+            const workouts = JSON.parse(localStorage.getItem('workouts_' + getUserPrefix() + selectedDate) || '[]');
             
             displayWorkouts(workouts);
             updateWorkoutSummary(workouts);
@@ -166,12 +171,21 @@
 
         function displayWorkouts(workouts) {
             const workoutsList = document.getElementById('workoutsList');
+            const selectedDate = document.getElementById('selectedDate').value;
+            const today = getTodayDate();
+            const isToday = selectedDate === today;
+            
+            // Update header
+            const dateObj = new Date(selectedDate + 'T00:00:00');
+            const dateStr = isToday ? "Today's" : dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            document.getElementById('workoutsHeader').textContent = `${dateStr} Workouts`;
             
             if (workouts.length === 0) {
+                const message = isToday ? "No workouts logged yet today" : `No workouts logged for ${dateStr.toLowerCase()}`;
                 workoutsList.innerHTML = `
                     <div class="empty-state">
-                        <p>No workouts logged yet today</p>
-                        <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Click "Log Workout" to get started</p>
+                        <p>${message}</p>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">${isToday ? 'Click "Log Workout" to get started' : 'Select today to log workouts'}</p>
                     </div>
                 `;
                 return;
@@ -212,6 +226,10 @@
         }
 
         function updateWorkoutSummary(workouts) {
+            const selectedDate = document.getElementById('selectedDate').value;
+            const today = getTodayDate();
+            const isToday = selectedDate === today;
+            
             const totalWorkouts = workouts.length;
             const totalExercises = workouts.reduce((sum, w) => sum + w.exercises.length, 0);
             const totalDuration = workouts.reduce((sum, w) => sum + parseInt(w.duration), 0);
@@ -221,6 +239,9 @@
             document.getElementById('totalExercises').textContent = totalExercises;
             document.getElementById('totalDuration').textContent = totalDuration;
             document.getElementById('totalVolume').textContent = totalVolume.toLocaleString();
+            
+            // Update labels
+            document.querySelectorAll('.workout-stat-label')[0].textContent = isToday ? 'Workouts Today' : 'Workouts';
         }
 
         function openAddWorkoutModal() {
@@ -309,12 +330,12 @@
                 timestamp: new Date().toISOString()
             };
 
-            const today = getTodayDate();
-            const workouts = JSON.parse(localStorage.getItem('workouts_' + getUserPrefix() + today) || '[]');
+            const selectedDate = document.getElementById('selectedDate').value;
+            const workouts = JSON.parse(localStorage.getItem('workouts_' + getUserPrefix() + selectedDate) || '[]');
             workouts.push(workout);
-            localStorage.setItem('workouts_' + getUserPrefix() + today, JSON.stringify(workouts));
+            localStorage.setItem('workouts_' + getUserPrefix() + selectedDate, JSON.stringify(workouts));
 
-            loadTodayWorkouts();
+            loadWorkoutsForDate();
             closeAddWorkoutModal();
             showToast('Workout logged successfully!', 'success');
         });
@@ -322,12 +343,12 @@
         function deleteWorkout(index) {
             if (!confirm('Are you sure you want to delete this workout?')) return;
             
-            const today = getTodayDate();
-            const workouts = JSON.parse(localStorage.getItem('workouts_' + getUserPrefix() + today) || '[]');
+            const selectedDate = document.getElementById('selectedDate').value;
+            const workouts = JSON.parse(localStorage.getItem('workouts_' + getUserPrefix() + selectedDate) || '[]');
             workouts.splice(index, 1);
-            localStorage.setItem('workouts_' + getUserPrefix() + today, JSON.stringify(workouts));
+            localStorage.setItem('workouts_' + getUserPrefix() + selectedDate, JSON.stringify(workouts));
             
-            loadTodayWorkouts();
+            loadWorkoutsForDate();
             showToast('Workout deleted', 'success');
         }
 
