@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
+
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
@@ -29,10 +29,10 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+
     <div class="main-content">
         <div class="page-container">
-            <!-- Page Header -->
+
             <div class="page-header">
                 <div>
                     <h1>Workout Tracker</h1>
@@ -43,8 +43,6 @@
                     <button onclick="openAddWorkoutModal()" class="btn">+ Log Workout</button>
                 </div>
             </div>
-
-            <!-- Workout Summary Card -->
             <div class="workout-summary">
                 <div class="workout-stat-card">
                     <span class="workout-icon">💪</span>
@@ -75,8 +73,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Workouts List -->
             <div class="workouts-section">
                 <h2 id="workoutsHeader">Today's Workouts</h2>
                 <div id="workoutsList" class="workouts-list">
@@ -89,7 +85,6 @@
         </div>
     </div>
 
-    <!-- Add Workout Modal -->
     <div id="addWorkoutModal" class="modal">
         <div class="modal-content" style="max-width: 700px;">
             <span class="modal-close" onclick="closeAddWorkoutModal()">&times;</span>
@@ -120,7 +115,6 @@
                 <div class="form-group">
                     <label>Exercises</label>
                     <div id="exercisesList">
-                        <!-- Exercises will be added here -->
                     </div>
                     <button type="button" onclick="addExerciseField()" class="btn btn-secondary btn-small">+ Add Exercise</button>
                 </div>
@@ -138,7 +132,6 @@
     <script>
         const API_URL = 'https://bit-portfolio-1.onrender.com';
         
-        // Check if user is logged in
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -152,7 +145,6 @@
 
         let exerciseCount = 0;
 
-        // Load workouts on page load
         const today = getTodayDate();
         document.getElementById('selectedDate').value = today;
         loadWorkoutsForDate();
@@ -175,7 +167,7 @@
             const today = getTodayDate();
             const isToday = selectedDate === today;
             
-            // Update header
+
             const dateObj = new Date(selectedDate + 'T00:00:00');
             const dateStr = isToday ? "Today's" : dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
             document.getElementById('workoutsHeader').textContent = `${dateStr} Workouts`;
@@ -240,13 +232,13 @@
             document.getElementById('totalDuration').textContent = totalDuration;
             document.getElementById('totalVolume').textContent = totalVolume.toLocaleString();
             
-            // Update labels
+
             document.querySelectorAll('.workout-stat-label')[0].textContent = isToday ? 'Workouts Today' : 'Workouts';
         }
 
         function openAddWorkoutModal() {
             document.getElementById('addWorkoutModal').style.display = 'flex';
-            // Add initial exercise field
+
             if (exerciseCount === 0) {
                 addExerciseField();
             }
@@ -300,7 +292,7 @@
         document.getElementById('addWorkoutForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Collect exercises
+
             const exercises = [];
             const exerciseFields = document.querySelectorAll('.exercise-field');
             let totalVolume = 0;

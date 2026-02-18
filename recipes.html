@@ -219,7 +219,7 @@
 </head>
 
 <body>
-  <!-- Navigation Bar -->
+
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-brand">
@@ -287,7 +287,7 @@
     </div>
   </div>
 
-  <!-- Add Recipe Modal -->
+
   <div id="addRecipeModal" class="modal">
     <div class="modal-content" style="max-width: 600px;">
       <span class="modal-close" onclick="closeAddRecipeModal()">&times;</span>
@@ -363,7 +363,7 @@
   </div>
 
   <script>
-    // Auth check
+
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!token) window.location.href = 'login.html';
@@ -376,12 +376,12 @@
       return new Date().toISOString().split('T')[0];
     }
 
-    // Load recipes from localStorage
+
     function loadRecipes() {
       return JSON.parse(localStorage.getItem('customRecipes_' + getUserPrefix().slice(0, -1)) || '[]');
     }
 
-    // Save recipes to localStorage
+
     function saveRecipes(recipes) {
       localStorage.setItem('customRecipes_' + getUserPrefix().slice(0, -1), JSON.stringify(recipes));
     }
@@ -398,7 +398,7 @@
       if (sortKey === 'cal-asc') return arr.sort((a,b) => a.calories - b.calories);
       if (sortKey === 'cal-desc') return arr.sort((a,b) => b.calories - a.calories);
       if (sortKey === 'name') return arr.sort((a,b) => a.name.localeCompare(b.name));
-      return arr.reverse(); // Default: most recent first
+      return arr.reverse(); 
     }
 
     function render() {
@@ -528,7 +528,6 @@
 
     function openAddRecipeModal() {
       document.getElementById('addRecipeModal').style.display = 'flex';
-      // Reset form
       document.getElementById('addRecipeForm').reset();
       document.getElementById('ingredientsList').innerHTML = `
         <div class="ingredient-row">
@@ -632,18 +631,16 @@
       window.location.href = 'index.html';
     }
 
-    // Events
     document.getElementById('searchInput').addEventListener('input', render);
     document.getElementById('filterSelect').addEventListener('change', render);
     document.getElementById('sortSelect').addEventListener('change', render);
 
-    // Close modal when clicking outside
     window.onclick = function(event) {
       const modal = document.getElementById('addRecipeModal');
       if (event.target === modal) closeAddRecipeModal();
     };
 
-    // Init
+
     render();
   </script>
 </body>

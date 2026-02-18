@@ -155,7 +155,7 @@
 </head>
 
 <body>
-  <!-- Navigation Bar -->
+
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-brand">
@@ -192,7 +192,7 @@
       </div>
 
       <div class="grid">
-        <!-- Account Card -->
+
         <div class="card">
           <h2>Account</h2>
 
@@ -233,7 +233,6 @@
           </div>
         </div>
 
-        <!-- Preferences Card -->
         <div class="card">
           <h2>Preferences</h2>
 
@@ -277,7 +276,6 @@
   <script>
     const API_URL = 'https://bit-portfolio-1.onrender.com';
 
-    // Auth check
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -289,10 +287,9 @@
         return user.id ? user.id + '_' : '';
     }
 
-    // Defaults
     const DEFAULT_GOAL = 2000;
 
-    // Initialize UI
+
     hydrateProfile();
     hydrateGoal();
     checkApiStatus();
@@ -387,7 +384,7 @@
           const data = await res.json();
           setApiStatus('Session verified. Protected endpoint succeeded.', 'ok');
 
-          // If server returns createdAt, show it
+
           if (data && data.createdAt) {
             document.getElementById('profileCreated').textContent =
               new Date(data.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -404,7 +401,7 @@
     }
 
     async function checkApiStatus() {
-      // Lightweight check: try protected profile; if it fails due to sleeping server, show warn.
+
       await testProtectedProfile();
     }
 

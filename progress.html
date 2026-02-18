@@ -147,7 +147,7 @@
 </head>
 
 <body>
-  <!-- Navigation Bar -->
+
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-brand">
@@ -183,7 +183,6 @@
       </div>
 
       <div class="layout">
-        <!-- Main: Weekly Summary -->
         <div class="card" id="mainCard">
           <h2>Last 7 Days Summary</h2>
           <p class="muted">
@@ -209,7 +208,6 @@
           <div class="list" id="dailyList"></div>
         </div>
 
-        <!-- Side: Weight + Insights -->
         <div class="card" id="sideCard">
           <h2>Weight</h2>
           <p class="muted">
@@ -245,14 +243,13 @@
 
           <h2>Weight History</h2>
           <div id="weightHistory" class="list">
-            <!-- Weight entries will be populated here -->
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Add Weight Modal -->
+
   <div id="weightModal" class="modal">
     <div class="modal-content" style="max-width:520px;">
       <span class="modal-close" onclick="closeWeightModal()">&times;</span>
@@ -284,7 +281,6 @@
   </div>
 
   <script>
-    // Auth check
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!token) window.location.href = 'login.html';
@@ -337,14 +333,14 @@
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key.startsWith(prefix)) {
-          const date = key.substring(prefix.length); // remove 'weight_' + prefix
+          const date = key.substring(prefix.length); 
           const data = getWeightForDate(date);
           if (data) {
             entries.push({ date, ...data });
           }
         }
       }
-      // Sort by date descending (newest first)
+
       entries.sort((a, b) => new Date(b.date) - new Date(a.date));
       return entries;
     }
@@ -390,7 +386,6 @@
         days.push({ iso, calories, workouts, weight });
       }
 
-      // Weekly stats
       const weekCalories = days.reduce((s, x) => s + x.calories, 0);
       const weekWorkouts = days.reduce((s, x) => s + x.workouts, 0);
       const avgCalories = Math.round(weekCalories / 7);
@@ -399,7 +394,7 @@
       document.getElementById('weekWorkouts').textContent = weekWorkouts.toLocaleString();
       document.getElementById('avgCalories').textContent = avgCalories.toLocaleString();
 
-      // Daily list
+      
       const list = document.getElementById('dailyList');
       list.innerHTML = '';
 
@@ -416,7 +411,7 @@
         list.appendChild(row);
       });
 
-      // Weight summary
+
       const weightEntries = days
         .map(d => ({ iso: d.iso, w: d.weight }))
         .filter(x => x.w && typeof x.w.value === 'number');
@@ -439,7 +434,7 @@
 
       setInsights(weekCalories, weekWorkouts, avgCalories, goal);
 
-      // Populate weight history
+
       const historyEl = document.getElementById('weightHistory');
       historyEl.innerHTML = '';
 
@@ -503,7 +498,6 @@
         return;
       }
 
-      // If editing and date changed, remove old entry
       if (editDate && editDate !== date) {
         localStorage.removeItem('weight_' + getUserPrefix() + editDate);
       }
@@ -534,13 +528,11 @@
       window.location.href = 'index.html';
     }
 
-    // Close modal when clicking outside
     window.onclick = function(event) {
       const modal = document.getElementById('weightModal');
       if (event.target === modal) closeWeightModal();
     };
 
-    // Init
     rebuild();
   </script>
 </body>

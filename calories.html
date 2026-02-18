@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
@@ -28,11 +27,9 @@
             <button onclick="logout()" class="btn btn-small">Logout</button>
         </div>
     </nav>
-
-    <!-- Main Content -->
     <div class="main-content">
         <div class="page-container">
-            <!-- Page Header -->
+
             <div class="page-header">
                 <div>
                     <h1>Calorie Tracker</h1>
@@ -44,7 +41,7 @@
                 </div>
             </div>
 
-            <!-- Calorie Summary Card -->
+
             <div class="calorie-summary">
                 <div class="summary-main">
                     <h3>Today's Calories</h3>
@@ -61,7 +58,6 @@
                     </p>
                 </div>
 
-                <!-- Macro Breakdown -->
                 <div class="macro-breakdown">
                     <div class="macro-item">
                         <span class="macro-label">Protein</span>
@@ -78,7 +74,6 @@
                 </div>
             </div>
 
-            <!-- Meals List -->
             <div class="meals-section">
                 <h2 id="mealsHeader">Today's Meals</h2>
                 <div id="mealsList" class="meals-list">
@@ -91,7 +86,6 @@
         </div>
     </div>
 
-    <!-- Add Meal Modal -->
     <div id="addMealModal" class="modal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeAddMealModal()">&times;</span>
@@ -145,7 +139,6 @@
     <script>
         const API_URL = 'https://bit-portfolio-1.onrender.com';
         
-        // Check if user is logged in
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -157,7 +150,7 @@
             return user.id ? user.id + '_' : '';
         }
 
-        // Load meals on page load
+
         const today = getTodayDate();
         document.getElementById('selectedDate').value = today;
         loadMealsForDate();
@@ -180,7 +173,7 @@
             const today = getTodayDate();
             const isToday = selectedDate === today;
             
-            // Update header
+
             const dateObj = new Date(selectedDate + 'T00:00:00');
             const dateStr = isToday ? "Today's" : dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
             document.getElementById('mealsHeader').textContent = `${dateStr} Meals`;
@@ -252,7 +245,6 @@
             document.getElementById('carbsTotal').textContent = totalCarbs + 'g';
             document.getElementById('fatTotal').textContent = totalFat + 'g';
 
-            // Update header text
             const dateObj = new Date(selectedDate + 'T00:00:00');
             const dateStr = isToday ? "Today's" : dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             document.querySelector('.summary-main h3').textContent = `${dateStr} Calories`;
@@ -325,7 +317,6 @@
             window.location.href = 'index.html';
         }
 
-        // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('addMealModal');
             if (event.target == modal) {
